@@ -38,7 +38,7 @@ class Header extends React.Component {
             </IconButton>
 
             <Typography variant="h6" color="inherit">
-              Monitor
+              Portal Monitor
             </Typography>
           </Toolbar>
         </AppBar>

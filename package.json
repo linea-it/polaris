@@ -1,6 +1,6 @@
 {
-  "name": "portal-my-workspace",
-  "homepage": "http://localhost/my-workspace",
+  "name": "portal-monitor",
+  "homepage": "http://localhost/monitor",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
