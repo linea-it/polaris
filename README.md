@@ -1,4 +1,4 @@
-# Linea My Workspace
+# Linea Monitor
 
 ## Running locally
 
