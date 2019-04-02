@@ -1,9 +1,9 @@
 pipeline {
     environment {
-        registry = "linea/perseus"
+        registry = "linea/monitor"
         registryCredential = 'Dockerhub'
         dockerImage = ''
-        deployment = 'perseus'
+        deployment = 'monitor'
         namespace = 'scienceportal-dev'
         namespace_prod = 'scienceportal'
     }
