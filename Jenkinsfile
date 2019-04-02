@@ -1,9 +1,9 @@
 pipeline {
     environment {
-        registry = "linea/monitor"
+        registry = "linea/polaris"
         registryCredential = 'Dockerhub'
         dockerImage = ''
-        deployment = 'monitor'
+        deployment = 'polaris'
         namespace = 'scienceportal-dev'
         namespace_prod = 'scienceportal'
     }
