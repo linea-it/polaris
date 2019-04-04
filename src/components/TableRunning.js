@@ -15,7 +15,7 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  VirtualTable,
+  Table,
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
@@ -379,7 +379,7 @@ class TableMyProcesses extends React.PureComponent {
             onPageSizeChange={this.changePageSize}
           />
           <CustomPaging totalCount={totalCount} />
-          <VirtualTable />
+          <Table />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <TableHeaderRow showSortingControls />
           <PagingPanel pageSizes={pageSizes} />
