@@ -15,7 +15,7 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  Table,
+  VirtualTable,
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
@@ -185,14 +185,19 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   loadTotalCount = async radix => {
-    const processesList = await Centaurus.getAllProcessesListTotalCount();
-    if (processesList !== null) {
+    const { filter } = this.state;
+    const processesList = await Centaurus.getAllProcessesListTotalCount(filter);
+    if (
+      processesList !== null && 
+      processesList && 
+      processesList.processesList
+    ) {
       const processesListLocal = processesList.processesList.pageInfo.endCursor;
 
       const decodeString = window.atob(processesListLocal);
 
       const totalCount = decodeString.split(':')[1];
-
+      
       this.setState({
         totalCount: parseInt(totalCount, radix),
       });
@@ -258,14 +263,16 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  handleChangeFilter = event => {
-    const filter = event.target.value;
+  handleChangeFilter = evt => {
     this.setState(
       {
         loading: true,
-        filter,
+        filter: evt.target.value,
       },
-      () => this.loadData()
+      () => {
+        this.loadData()
+        this.loadTotalCount(evt.target.value);
+      }
     );
   };
 
@@ -320,7 +327,7 @@ class TableMyProcesses extends React.PureComponent {
           displayEmpty
           name="filter"
         >
-          <MenuItem value="">All</MenuItem>
+          <MenuItem value={''}>All</MenuItem>
           <MenuItem value={'running'}>Running</MenuItem>
         </Select>
       </FormControl>
@@ -370,7 +377,7 @@ class TableMyProcesses extends React.PureComponent {
             onPageSizeChange={this.changePageSize}
           />
           <CustomPaging totalCount={totalCount} />
-          <Table />
+          <VirtualTable />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <TableHeaderRow showSortingControls />
           <PagingPanel pageSizes={pageSizes} />

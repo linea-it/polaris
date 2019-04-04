@@ -11,15 +11,24 @@ const client = new Lokka({
 });
 
 export default class Centaurus {
-  static async getAllProcessesListTotalCount() {
+  static async getAllProcessesListTotalCount(filter) {
+    var strFilter = '';
+
+    if (filter === '') {
+      strFilter = "allInstances: true";
+    } else if (filter === 'running') {
+      strFilter = "running: true";
+    }
+
     try {
       const processesList = await client.query(`
         {
-            processesList {                    
-                pageInfo {
-                    endCursor
-                }
+          processesList( ${strFilter} ) {                    
+            pageInfo {
+              startCursor
+              endCursor
             }
+          }
         }
       `);
       return processesList;
@@ -47,19 +56,19 @@ export default class Centaurus {
       search = `, search: "${searchValue}"`;
     }
 
-    if (filter === 'running') {
-      strFilter = `, running: true`;
+    if (filter === '') {
+      strFilter = "allInstances: true";
+    } else if (filter === 'running') {
+      strFilter = "running: true";
     }
 
     try {
       const processesList = await client.query(`
         {
-            processesList(allInstances: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${strFilter} ${search}) {
+            processesList(${strFilter}, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
                 pageInfo {
                     startCursor
                     endCursor
-                    hasNextPage
-                    hasPreviousPage
                 }
                 edges {
                     cursor
