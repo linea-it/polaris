@@ -113,6 +113,7 @@ class TableMyProcesses extends React.PureComponent {
       loading: true,
       after: '',
       filter: '',
+      filterOld: null,
       searchValue: '',
     };
   }
@@ -122,7 +123,7 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.loadTotalCount();
+    // this.loadTotalCount();
     this.loadData();
   }
 
@@ -184,32 +185,31 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  loadTotalCount = async radix => {
-    const { filter } = this.state;
-    const processesList = await Centaurus.getAllProcessesListTotalCount(filter);
-    if (
-      processesList !== null && 
-      processesList && 
-      processesList.processesList
-    ) {
-      const processesListLocal = processesList.processesList.pageInfo.endCursor;
+  decodeTotalCount = processesList => {
+    const processesListLocal = processesList.processesList.pageInfo.endCursor;
 
-      const decodeString = window.atob(processesListLocal);
+    const decodeString = window.atob(processesListLocal);
 
-      const totalCount = decodeString.split(':')[1];
-      
-      this.setState({
-        totalCount: parseInt(totalCount, radix),
-      });
-    } else {
-      this.setState({
-        loading: false,
-      });
-    }
-  };
+    const totalCount = decodeString.split(':')[1];
+
+    return totalCount;
+  }
+
+  clearData = () => {
+    this.setState({
+      data: [],
+    })
+  }
 
   loadData = async () => {
-    const { sorting, pageSize, after, filter, searchValue } = this.state;
+    const { sorting, pageSize, after, filter, searchValue, filterOld } = this.state;
+    let { totalCount } = this.state;
+    this.clearData();
+    if (filter !== filterOld) {
+      const processesListTotal = await Centaurus.getAllProcessesListTotalCount(filter);
+      totalCount = this.decodeTotalCount(processesListTotal)
+    }
+
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
@@ -255,8 +255,10 @@ class TableMyProcesses extends React.PureComponent {
       });
       this.setState({
         data: processesListLocal,
+        totalCount: parseInt(totalCount),
         cursor: processesList.processesList.pageInfo,
         loading: false,
+        filterOld: filter,
       });
     } else {
       return null;
@@ -268,10 +270,10 @@ class TableMyProcesses extends React.PureComponent {
       {
         loading: true,
         filter: evt.target.value,
+        filterOld: this.state.filter,
       },
       () => {
-        this.loadData()
-        this.loadTotalCount(evt.target.value);
+        this.loadData();
       }
     );
   };
