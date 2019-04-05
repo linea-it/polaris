@@ -14,7 +14,7 @@ export default class Centaurus {
   static async getAllProcessesListTotalCount(filter) {
     var strFilter = '';
 
-    if (filter === '') {
+    if (filter === 'all') {
       strFilter = "allInstances: true";
     } else if (filter === 'running') {
       strFilter = "running: true";
@@ -56,7 +56,7 @@ export default class Centaurus {
       search = `, search: "${searchValue}"`;
     }
 
-    if (filter === '') {
+    if (filter === 'all') {
       strFilter = "allInstances: true";
     } else if (filter === 'running') {
       strFilter = "running: true";
