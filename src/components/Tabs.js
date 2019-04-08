@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+// import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import TableRunning from './TableRunning';
 
@@ -32,7 +32,7 @@ const styles = theme => ({
     position: 'fixed',
     top: 0,
     width: '100%',
-    zIndex: '9',
+    zIndex: '1100',
   },
 
   tab: {
@@ -66,7 +66,7 @@ class SimpleTabs extends React.Component {
           indicatorColor="primary"
           onChange={this.handleChange}
         >
-          <Tab />
+          {/* <Tab /> */}
         </Tabs>
         {value === 0 && (
           <TabContainer className={classes.tab}>

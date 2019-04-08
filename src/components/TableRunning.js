@@ -78,8 +78,11 @@ const styles = {
 class TableMyProcesses extends React.PureComponent {
   constructor(props) {
     super(props);
+    this.state = this.initialState;
+  }
 
-    this.state = {
+  get initialState() {
+    return {
       columns: [
         { name: 'process_id', title: 'Process ID' },
         { name: 'start_time', title: 'Start Time' },
@@ -112,7 +115,8 @@ class TableMyProcesses extends React.PureComponent {
       currentPage: 0,
       loading: true,
       after: '',
-      filter: '',
+      filter: 'all',
+      filterOld: null,
       searchValue: '',
     };
   }
@@ -122,7 +126,6 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.loadTotalCount();
     this.loadData();
   }
 
@@ -184,8 +187,7 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  loadTotalCount = async radix => {
-    const processesList = await Centaurus.getAllProcessesListTotalCount();
+  decodeTotalCount = processesList => {
     if (processesList !== null) {
       const processesListLocal = processesList.processesList.pageInfo.endCursor;
 
@@ -193,18 +195,34 @@ class TableMyProcesses extends React.PureComponent {
 
       const totalCount = decodeString.split(':')[1];
 
-      this.setState({
-        totalCount: parseInt(totalCount, radix),
-      });
-    } else {
-      this.setState({
-        loading: false,
-      });
+      return totalCount;
     }
   };
 
+  clearData = () => {
+    this.setState({
+      data: [],
+    });
+  };
+
   loadData = async () => {
-    const { sorting, pageSize, after, filter, searchValue } = this.state;
+    const {
+      sorting,
+      pageSize,
+      after,
+      filter,
+      searchValue,
+      filterOld,
+    } = this.state;
+    let { totalCount } = this.state;
+    this.clearData();
+    if (filter !== filterOld) {
+      const processesListTotal = await Centaurus.getAllProcessesListTotalCount(
+        filter
+      );
+      totalCount = this.decodeTotalCount(processesListTotal);
+    }
+
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
@@ -250,23 +268,28 @@ class TableMyProcesses extends React.PureComponent {
       });
       this.setState({
         data: processesListLocal,
+        totalCount: parseInt(totalCount),
         cursor: processesList.processesList.pageInfo,
         loading: false,
+        filterOld: filter,
       });
     } else {
       return null;
     }
   };
 
-  handleChangeFilter = event => {
-    const filter = event.target.value;
-    this.setState(
-      {
-        loading: true,
-        filter,
-      },
-      () => this.loadData()
-    );
+  handleChangeFilter = evt => {
+    const filter = evt.target.value;
+    const filterOld = this.state.filterOld;
+    const totalCount = this.state.totalCount;
+
+    const initialState = this.initialState;
+    initialState.loading = true;
+    initialState.filter = filter;
+    initialState.filterOld = filterOld;
+    initialState.totalCount = parseInt(totalCount);
+
+    this.setState(initialState, () => this.loadData());
   };
 
   renderStatus = rowData => {
@@ -320,14 +343,14 @@ class TableMyProcesses extends React.PureComponent {
           displayEmpty
           name="filter"
         >
-          <MenuItem value="">All</MenuItem>
+          <MenuItem value={'all'}>All</MenuItem>
           <MenuItem value={'running'}>Running</MenuItem>
         </Select>
       </FormControl>
     );
   };
 
-  render() {
+  renderTable = () => {
     const {
       data,
       columns,
@@ -336,10 +359,42 @@ class TableMyProcesses extends React.PureComponent {
       pageSizes,
       currentPage,
       totalCount,
-      loading,
       defaultColumnWidths,
     } = this.state;
 
+    return (
+      <Grid rows={data} columns={columns}>
+        {/* <SearchState onValueChange={this.changeSearchValue} /> */}
+        <SortingState
+          sorting={sorting}
+          onSortingChange={this.changeSorting}
+          columnExtensions={[
+            { columnName: 'duration', sortingEnabled: false },
+            { columnName: 'instance', sortingEnabled: false },
+            { columnName: 'release', sortingEnabled: false },
+            { columnName: 'dataset', sortingEnabled: false },
+            { columnName: 'owner', sortingEnabled: false },
+          ]}
+        />
+        <PagingState
+          currentPage={currentPage}
+          onCurrentPageChange={this.changeCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={this.changePageSize}
+        />
+        <CustomPaging totalCount={totalCount} />
+        <Table />
+        <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
+        <TableHeaderRow showSortingControls />
+        <PagingPanel pageSizes={pageSizes} />
+        <Toolbar />
+        {/* <SearchPanel /> */}
+      </Grid>
+    );
+  };
+
+  render() {
+    const { data, loading } = this.state;
     const { classes } = this.props;
 
     data.map(row => {
@@ -350,33 +405,7 @@ class TableMyProcesses extends React.PureComponent {
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
-        <Grid rows={data} columns={columns}>
-          {/* <SearchState onValueChange={this.changeSearchValue} /> */}
-          <SortingState
-            sorting={sorting}
-            onSortingChange={this.changeSorting}
-            columnExtensions={[
-              { columnName: 'duration', sortingEnabled: false },
-              { columnName: 'instance', sortingEnabled: false },
-              { columnName: 'release', sortingEnabled: false },
-              { columnName: 'dataset', sortingEnabled: false },
-              { columnName: 'owner', sortingEnabled: false },
-            ]}
-          />
-          <PagingState
-            currentPage={currentPage}
-            onCurrentPageChange={this.changeCurrentPage}
-            pageSize={pageSize}
-            onPageSizeChange={this.changePageSize}
-          />
-          <CustomPaging totalCount={totalCount} />
-          <Table />
-          <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-          <TableHeaderRow showSortingControls />
-          <PagingPanel pageSizes={pageSizes} />
-          <Toolbar />
-          {/* <SearchPanel /> */}
-        </Grid>
+        {this.renderTable()}
         {loading && this.renderLoading()}
       </Paper>
     );
