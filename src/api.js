@@ -15,9 +15,9 @@ export default class Centaurus {
     var strFilter = '';
 
     if (filter === 'all') {
-      strFilter = "allInstances: true";
+      strFilter = 'allInstances: true';
     } else if (filter === 'running') {
-      strFilter = "running: true";
+      strFilter = 'running: true';
     }
 
     try {
@@ -57,9 +57,9 @@ export default class Centaurus {
     }
 
     if (filter === 'all') {
-      strFilter = "allInstances: true";
+      strFilter = 'allInstances: true';
     } else if (filter === 'running') {
-      strFilter = "running: true";
+      strFilter = 'running: true';
     }
 
     try {

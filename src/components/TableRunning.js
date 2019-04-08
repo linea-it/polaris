@@ -197,21 +197,30 @@ class TableMyProcesses extends React.PureComponent {
 
       return totalCount;
     }
-  }
+  };
 
   clearData = () => {
     this.setState({
       data: [],
-    })
-  }
+    });
+  };
 
   loadData = async () => {
-    const { sorting, pageSize, after, filter, searchValue, filterOld } = this.state;
+    const {
+      sorting,
+      pageSize,
+      after,
+      filter,
+      searchValue,
+      filterOld,
+    } = this.state;
     let { totalCount } = this.state;
     this.clearData();
     if (filter !== filterOld) {
-      const processesListTotal = await Centaurus.getAllProcessesListTotalCount(filter);
-      totalCount = this.decodeTotalCount(processesListTotal)
+      const processesListTotal = await Centaurus.getAllProcessesListTotalCount(
+        filter
+      );
+      totalCount = this.decodeTotalCount(processesListTotal);
     }
 
     const processesList = await Centaurus.getAllProcessesList(
@@ -280,10 +289,7 @@ class TableMyProcesses extends React.PureComponent {
     initialState.filterOld = filterOld;
     initialState.totalCount = parseInt(totalCount);
 
-    this.setState(
-      initialState, 
-      () => this.loadData()
-    )
+    this.setState(initialState, () => this.loadData());
   };
 
   renderStatus = rowData => {
@@ -388,7 +394,7 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   render() {
-    const { data, loading, } = this.state;
+    const { data, loading } = this.state;
     const { classes } = this.props;
 
     data.map(row => {
@@ -407,4 +413,3 @@ class TableMyProcesses extends React.PureComponent {
 }
 
 export default withStyles(styles)(TableMyProcesses);
-
