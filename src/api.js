@@ -48,7 +48,12 @@ export default class Centaurus {
                 startTime
                 endTime
                 name
+                flagPublished
                 instance
+                savedProcesses {
+                  savedDate
+                  savedDateEnd
+                }
                 processStatus{
                   name
                 }

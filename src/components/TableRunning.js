@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
+import Icon from '@material-ui/core/Icon';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -31,6 +32,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
+// eslint-disable-next-line import/no-unresolved
+import loading from '../assets/img/waiting.gif';
 
 const styles = {
   wrapPaper: {
@@ -108,11 +111,15 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'dataset', title: 'Dataset' },
         { name: 'owner', title: 'Owner' },
         { name: 'status_id', title: 'Status' },
+        { name: 'saved', title: 'Saved' },
+        { name: 'flag_published', title: 'Published' },
       ],
       tableColumnExtensions: [
         { columnName: 'process_id', width: 140 },
         { columnName: 'duration', width: 110 },
         { columnName: 'status_id', width: 110 },
+        { columnName: 'saved', width: 100 },
+        { columnName: 'flag_published', width: 130 },
       ],
       data: [],
       sorting: [{ columnName: 'process_id', direction: 'desc' }],
@@ -265,6 +272,8 @@ class TableMyProcesses extends React.PureComponent {
               : '-',
           owner: row.node.session.user.displayName,
           status_id: row.node.processStatus.name,
+          saved: row.node.savedProcesses,
+          flag_published: row.node.flagPublished,
         };
       });
       this.setState({
@@ -399,6 +408,30 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderSaved = rowData => {
+    const { classes } = this.props;
+
+    if (rowData.saved) {
+      if (rowData.saved.savedDateEnd === null) {
+        return <img src={loading} alt="" />;
+      } else {
+        return <Icon className={classes.iconCheck}>check</Icon>;
+      }
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
+  renderCheck = rowData => {
+    const { classes } = this.props;
+
+    if (rowData.flag_published) {
+      return <Icon className={classes.iconCheck}>check</Icon>;
+    } else {
+      return '-';
+    }
+  };
+
   renderLoading = () => {
     return (
       <CircularProgress
@@ -507,6 +540,8 @@ class TableMyProcesses extends React.PureComponent {
       row.dataset = this.renderDataset(row);
       row.owner = this.renderOwner(row);
       row.status_id = this.renderStatus(row);
+      row.saved = this.renderSaved(row);
+      row.flag_published = this.renderCheck(row);
       return row;
     });
 
