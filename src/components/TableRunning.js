@@ -32,8 +32,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
-// eslint-disable-next-line import/no-unresolved
-import loading from '../assets/img/waiting.gif';
 
 const styles = {
   wrapPaper: {
@@ -413,7 +411,12 @@ class TableMyProcesses extends React.PureComponent {
 
     if (rowData.saved) {
       if (rowData.saved.savedDateEnd === null) {
-        return <img src={loading} alt="" />;
+        return (
+          <CircularProgress
+            disableShrink
+            style={{ width: '25px', height: '25px' }}
+          />
+        );
       } else {
         return <Icon className={classes.iconCheck}>check</Icon>;
       }
