@@ -392,17 +392,17 @@ class TableMyProcesses extends React.PureComponent {
         <span
           className={classes.btn}
           style={styles.btnFailure}
-          title={rowData.status_id}
+          title={rowData.processes_status_id}
         >
           Failure
         </span>
       );
-    } else if (rowData.status_id === 'running') {
+    } else if (rowData.processes_status_id === 'running') {
       return (
         <span
           className={classes.btn}
           style={styles.btnRunning}
-          title={rowData.status_id}
+          title={rowData.processes_status_id}
         >
           Running
         </span>
@@ -412,7 +412,7 @@ class TableMyProcesses extends React.PureComponent {
         <span
           className={classes.btn}
           style={styles.btnSuccess}
-          title={rowData.status_id}
+          title={rowData.processes_status_id}
         >
           Success
         </span>
