@@ -99,28 +99,28 @@ class TableMyProcesses extends React.PureComponent {
   get initialState() {
     return {
       columns: [
-        { name: 'process_id', title: 'Process ID' },
-        { name: 'start_time', title: 'Start Time' },
-        { name: 'end_time', title: 'End Time' },
+        { name: 'processes_process_id', title: 'Process ID' },
+        { name: 'processes_start_time', title: 'Start Time' },
+        { name: 'processes_end_time', title: 'End Time' },
         { name: 'duration', title: 'Duration' },
         { name: 'name', title: 'Pipeline' },
         { name: 'instance', title: 'Instance' },
         { name: 'release', title: 'Release' },
         { name: 'dataset', title: 'Dataset' },
         { name: 'owner', title: 'Owner' },
-        { name: 'status_id', title: 'Status' },
+        { name: 'processes_status_id', title: 'Status' },
         { name: 'saved', title: 'Saved' },
-        { name: 'flag_published', title: 'Published' },
+        { name: 'processes_flag_published', title: 'Published' },
       ],
       tableColumnExtensions: [
-        { columnName: 'process_id', width: 140 },
+        { columnName: 'processes_process_id', width: 140 },
         { columnName: 'duration', width: 110 },
-        { columnName: 'status_id', width: 110 },
+        { columnName: 'processes_status_id', width: 110 },
         { columnName: 'saved', width: 100 },
-        { columnName: 'flag_published', width: 130 },
+        { columnName: 'processes_flag_published', width: 130 },
       ],
       data: [],
-      sorting: [{ columnName: 'process_id', direction: 'desc' }],
+      sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
       totalCount: 0,
       pageSize: 10,
       pageSizes: [5, 10, 15],
@@ -249,9 +249,11 @@ class TableMyProcesses extends React.PureComponent {
         const duration = moment.utc(diff).format('HH:mm:ss');
 
         return {
-          process_id: row.node.processId,
-          start_time: row.node.startTime !== null ? row.node.startTime : '-',
-          end_time: row.node.endTime !== null ? row.node.endTime : '-',
+          processes_process_id: row.node.processId,
+          processes_start_time:
+            row.node.startTime !== null ? row.node.startTime : '-',
+          processes_end_time:
+            row.node.endTime !== null ? row.node.endTime : '-',
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
           name: row.node.name,
@@ -269,9 +271,9 @@ class TableMyProcesses extends React.PureComponent {
                 })
               : '-',
           owner: row.node.session.user.displayName,
-          status_id: row.node.processStatus.name,
+          processes_status_id: row.node.processStatus.name,
           saved: row.node.savedProcesses,
-          flag_published: row.node.flagPublished,
+          processes_flag_published: row.node.flagPublished,
         };
       });
       this.setState({
@@ -300,24 +302,36 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderProcessesId = rowData => {
-    if (rowData.process_id) {
-      return <span title={rowData.process_id}>{rowData.process_id}</span>;
+    if (rowData.processes_process_id) {
+      return (
+        <span title={rowData.processes_process_id}>
+          {rowData.processes_process_id}
+        </span>
+      );
     } else {
       return '-';
     }
   };
 
   renderStartTime = rowData => {
-    if (rowData.start_time) {
-      return <span title={rowData.start_time}>{rowData.start_time}</span>;
+    if (rowData.processes_start_time) {
+      return (
+        <span title={rowData.processes_start_time}>
+          {rowData.processes_start_time}
+        </span>
+      );
     } else {
       return '-';
     }
   };
 
   renderEndTime = rowData => {
-    if (rowData.end_time) {
-      return <span title={rowData.end_time}>{rowData.end_time}</span>;
+    if (rowData.processes_end_time) {
+      return (
+        <span title={rowData.processes_end_time}>
+          {rowData.processes_end_time}
+        </span>
+      );
     } else {
       return '-';
     }
@@ -373,7 +387,7 @@ class TableMyProcesses extends React.PureComponent {
 
   renderStatus = rowData => {
     const { classes } = this.props;
-    if (rowData.status_id === 'failure') {
+    if (rowData.processes_status_id === 'failure') {
       return (
         <span
           className={classes.btn}
@@ -428,7 +442,7 @@ class TableMyProcesses extends React.PureComponent {
   renderCheck = rowData => {
     const { classes } = this.props;
 
-    if (rowData.flag_published) {
+    if (rowData.processes_flag_published) {
       return <Icon className={classes.iconCheck}>check</Icon>;
     } else {
       return '-';
@@ -495,6 +509,7 @@ class TableMyProcesses extends React.PureComponent {
             { columnName: 'release', sortingEnabled: false },
             { columnName: 'dataset', sortingEnabled: false },
             { columnName: 'owner', sortingEnabled: false },
+            { columnName: 'saved', sortingEnabled: false },
           ]}
         />
         <PagingState
@@ -533,18 +548,18 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     data.map(row => {
-      row.process_id = this.renderProcessesId(row);
-      row.start_time = this.renderStartTime(row);
-      row.end_time = this.renderEndTime(row);
+      row.processes_process_id = this.renderProcessesId(row);
+      row.processes_start_time = this.renderStartTime(row);
+      row.processes_end_time = this.renderEndTime(row);
       row.duration = this.renderDuration(row);
       row.name = this.renderName(row);
       row.instance = this.renderInstance(row);
       row.release = this.renderRelease(row);
       row.dataset = this.renderDataset(row);
       row.owner = this.renderOwner(row);
-      row.status_id = this.renderStatus(row);
+      row.processes_status_id = this.renderStatus(row);
       row.saved = this.renderSaved(row);
-      row.flag_published = this.renderCheck(row);
+      row.processes_flag_published = this.renderCheck(row);
       return row;
     });
 
