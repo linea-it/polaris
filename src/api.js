@@ -35,7 +35,7 @@ export default class Centaurus {
     try {
       const processesList = await client.query(`
         {
-          processesList(${strFilter}, search: "${searchValue}", sort: [${sort}], first: ${pageSize} ${strAfter}) {
+          processesList(${strFilter}, search: {text: "${searchValue}", columns: [processes_name, process_status_display_name, fields_display_name, release_tag_release_display_name, tg_user_display_name]}, sort: [${sort}], first: ${pageSize} ${strAfter}) {
             pageInfo {
                 startCursor
                 endCursor
