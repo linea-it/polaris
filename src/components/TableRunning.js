@@ -103,19 +103,26 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'processes_start_time', title: 'Start Time' },
         { name: 'processes_end_time', title: 'End Time' },
         { name: 'duration', title: 'Duration' },
-        { name: 'name', title: 'Pipeline' },
-        { name: 'instance', title: 'Instance' },
-        { name: 'release', title: 'Release' },
-        { name: 'dataset', title: 'Dataset' },
-        { name: 'owner', title: 'Owner' },
-        { name: 'processes_status_id', title: 'Status' },
+        { name: 'processes_name', title: 'Pipeline' },
+        { name: 'processes_instance', title: 'Instance' },
+        { name: 'releasetag_release_display_name', title: 'Release' },
+        { name: 'fields_display_name', title: 'Dataset' },
+        { name: 'tguser_display_name', title: 'Owner' },
+        { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
         { name: 'processes_flag_published', title: 'Published' },
       ],
-      tableColumnExtensions: [
+      defaultColumnWidths: [
         { columnName: 'processes_process_id', width: 140 },
+        { columnName: 'processes_start_time', width: 180 },
+        { columnName: 'processes_end_time', width: 180 },
         { columnName: 'duration', width: 110 },
-        { columnName: 'processes_status_id', width: 110 },
+        { columnName: 'processes_name', width: 180 },
+        { columnName: 'processes_instance', width: 180 },
+        { columnName: 'releasetag_release_display_name', width: 180 },
+        { columnName: 'fields_display_name', width: 180 },
+        { columnName: 'tguser_display_name', width: 180 },
+        { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 100 },
         { columnName: 'processes_flag_published', width: 130 },
       ],
@@ -256,22 +263,22 @@ class TableMyProcesses extends React.PureComponent {
             row.node.endTime !== null ? row.node.endTime : '-',
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
-          name: row.node.name,
-          instance: row.node.instance,
-          release:
+          processes_name: row.node.name,
+          processes_instance: row.node.instance,
+          releasetag_release_display_name:
             row.node.fields.edges.length !== 0
               ? row.node.fields.edges.map(edge => {
                   return edge.node.releaseTag.releaseDisplayName;
                 })
               : '-',
-          dataset:
+          fields_display_name:
             row.node.fields.edges.length !== 0
               ? row.node.fields.edges.map(edge => {
-                  return edge.node.fieldName;
+                  return edge.node.displayName;
                 })
               : '-',
-          owner: row.node.session.user.displayName,
-          processes_status_id: row.node.processStatus.name,
+          tguser_display_name: row.node.session.user.displayName,
+          processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
           processes_flag_published: row.node.flagPublished,
         };
@@ -346,40 +353,58 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderName = rowData => {
-    if (rowData.name) {
-      return <span title={rowData.name}>{rowData.name}</span>;
+    if (rowData.processes_name) {
+      return (
+        <span title={rowData.processes_name}>{rowData.processes_name}</span>
+      );
     } else {
       return '-';
     }
   };
 
   renderInstance = rowData => {
-    if (rowData.instance) {
-      return <span title={rowData.instance}>{rowData.instance}</span>;
+    if (rowData.processes_instance) {
+      return (
+        <span title={rowData.processes_instance}>
+          {rowData.processes_instance}
+        </span>
+      );
     } else {
       return '-';
     }
   };
 
   renderRelease = rowData => {
-    if (rowData.release) {
-      return <span title={rowData.release}>{rowData.release}</span>;
+    if (rowData.releasetag_release_display_name) {
+      return (
+        <span title={rowData.releasetag_release_display_name}>
+          {rowData.releasetag_release_display_name}
+        </span>
+      );
     } else {
       return '-';
     }
   };
 
   renderDataset = rowData => {
-    if (rowData.dataset) {
-      return <span title={rowData.dataset}>{rowData.dataset}</span>;
+    if (rowData.fields_display_name) {
+      return (
+        <span title={rowData.fields_display_name}>
+          {rowData.fields_display_name}
+        </span>
+      );
     } else {
       return '-';
     }
   };
 
   renderOwner = rowData => {
-    if (rowData.owner) {
-      return <span title={rowData.owner}>{rowData.owner}</span>;
+    if (rowData.tguser_display_name) {
+      return (
+        <span title={rowData.tguser_display_name}>
+          {rowData.tguser_display_name}
+        </span>
+      );
     } else {
       return '-';
     }
@@ -387,22 +412,22 @@ class TableMyProcesses extends React.PureComponent {
 
   renderStatus = rowData => {
     const { classes } = this.props;
-    if (rowData.processes_status_id === 'failure') {
+    if (rowData.processstatus_display_name === 'failure') {
       return (
         <span
           className={classes.btn}
           style={styles.btnFailure}
-          title={rowData.processes_status_id}
+          title={rowData.processstatus_display_name}
         >
           Failure
         </span>
       );
-    } else if (rowData.processes_status_id === 'running') {
+    } else if (rowData.processstatus_display_name === 'running') {
       return (
         <span
           className={classes.btn}
           style={styles.btnRunning}
-          title={rowData.processes_status_id}
+          title={rowData.processstatus_display_name}
         >
           Running
         </span>
@@ -412,7 +437,7 @@ class TableMyProcesses extends React.PureComponent {
         <span
           className={classes.btn}
           style={styles.btnSuccess}
-          title={rowData.processes_status_id}
+          title={rowData.processstatus_display_name}
         >
           Success
         </span>
@@ -493,7 +518,7 @@ class TableMyProcesses extends React.PureComponent {
       pageSizes,
       currentPage,
       totalCount,
-      tableColumnExtensions,
+      defaultColumnWidths,
       selection,
     } = this.state;
 
@@ -523,8 +548,8 @@ class TableMyProcesses extends React.PureComponent {
           selection={selection}
           onSelectionChange={this.changeSelection}
         />
-        <Table columnExtensions={tableColumnExtensions} />
-        <TableColumnResizing />
+        <Table />
+        <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
         <TableHeaderRow
           cellComponent={tableHeaderRowCell}
           showSortingControls
@@ -552,12 +577,12 @@ class TableMyProcesses extends React.PureComponent {
       row.processes_start_time = this.renderStartTime(row);
       row.processes_end_time = this.renderEndTime(row);
       row.duration = this.renderDuration(row);
-      row.name = this.renderName(row);
-      row.instance = this.renderInstance(row);
-      row.release = this.renderRelease(row);
-      row.dataset = this.renderDataset(row);
-      row.owner = this.renderOwner(row);
-      row.processes_status_id = this.renderStatus(row);
+      row.processes_name = this.renderName(row);
+      row.processes_instance = this.renderInstance(row);
+      row.releasetag_release_display_name = this.renderRelease(row);
+      row.fields_display_name = this.renderDataset(row);
+      row.tguser_display_name = this.renderOwner(row);
+      row.processstatus_display_name = this.renderStatus(row);
       row.saved = this.renderSaved(row);
       row.processes_flag_published = this.renderCheck(row);
       return row;
