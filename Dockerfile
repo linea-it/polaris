@@ -4,6 +4,7 @@ COPY . /src/app
 WORKDIR /src/app
 RUN yarn -v
 RUN yarn --ignore-optional
+RUN node node_modules/.bin/get-git-version -o src/assets/json/version.json
 RUN yarn run build
 FROM nginx:latest
 RUN chgrp nginx /var/cache/nginx/
