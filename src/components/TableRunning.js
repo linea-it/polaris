@@ -284,7 +284,7 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
-          processes_flag_published: row.node.flagPublished,
+          processes_flag_published: row.node.publishedDate,
         };
       });
       this.setState({
@@ -453,6 +453,7 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     if (rowData.saved) {
+      const tooltDate = rowData.saved.savedDateEnd.split('T')[0];
       if (rowData.saved.savedDateEnd === null) {
         return (
           <CircularProgress
@@ -461,7 +462,11 @@ class TableMyProcesses extends React.PureComponent {
           />
         );
       } else {
-        return <Icon className={classes.iconCheck}>check</Icon>;
+        return (
+          <Icon title={tooltDate} className={classes.iconCheck}>
+            check
+          </Icon>
+        );
       }
     } else if (rowData.saved === null) {
       return '-';
@@ -472,7 +477,12 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     if (rowData.processes_flag_published) {
-      return <Icon className={classes.iconCheck}>check</Icon>;
+      const publishedDate = rowData.processes_flag_published.split('T')[0];
+      return (
+        <Icon title={publishedDate} className={classes.iconCheck}>
+          check
+        </Icon>
+      );
     } else {
       return '-';
     }

@@ -49,6 +49,7 @@ export default class Centaurus {
                 endTime
                 name
                 flagPublished
+                publishedDate
                 instance
                 savedProcesses {
                   savedDate
