@@ -69,14 +69,15 @@ class Footer extends Component {
       <footer className={classes.root}>
         <AppBar position="fixed" color="primary" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <Typography className={classes.grow} color="inherit">
+            <Typography color="inherit">
               {instance} Portal:{' '}
-              <span
+            </Typography>
+            <Typography 
+                className={classes.grow} 
                 onClick={() => this.openGithub(vlink)}
                 className={classes.versionLink}
-              >
-                {version}
-              </span>
+            >
+              {version}
             </Typography>
             <Typography color="inherit">Powered by</Typography>
             <img
