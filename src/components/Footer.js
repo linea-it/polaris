@@ -6,7 +6,6 @@ import { Typography, Toolbar } from '@material-ui/core';
 import logo from '../assets/img/linea-logo-mini.png';
 import git_json from '../assets/json/version.json';
 
-
 const styles = {
   grow: {
     flexGrow: 1,
@@ -72,9 +71,9 @@ class Footer extends Component {
           <Toolbar className={classes.toolbar}>
             <Typography color="inherit" className={classes.grow}>
               {instance} Portal:{' '}
-              <span 
-                  onClick={() => this.openGithub(vlink)}
-                  className={classes.versionLink}
+              <span
+                onClick={() => this.openGithub(vlink)}
+                className={classes.versionLink}
               >
                 {version}
               </span>
