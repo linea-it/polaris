@@ -452,7 +452,9 @@ class TableMyProcesses extends React.PureComponent {
   renderSaved = rowData => {
     const { classes } = this.props;
     if (rowData.saved && rowData.saved.savedDateEnd) {
-      const tooltDate = moment.utc(rowData.saved.savedDateEnd).format('YYYY-MM-DD');
+      const tooltDate = moment
+        .utc(rowData.saved.savedDateEnd)
+        .format('YYYY-MM-DD');
       if (rowData.saved.savedDateEnd === null) {
         return (
           <CircularProgress
@@ -475,8 +477,9 @@ class TableMyProcesses extends React.PureComponent {
   renderCheck = rowData => {
     const { classes } = this.props;
     if (rowData.processes_published_date) {
-      
-      const publishedDate = moment.utc(rowData.processes_published_date).format('YYYY-MM-DD');
+      const publishedDate = moment
+        .utc(rowData.processes_published_date)
+        .format('YYYY-MM-DD');
       return (
         <Icon title={publishedDate} className={classes.iconCheck}>
           check
