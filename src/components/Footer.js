@@ -4,6 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import { Typography, Toolbar } from '@material-ui/core';
 import logo from '../assets/img/linea-logo-mini.png';
+import git_json from '../assets/json/version.json';
+
 
 const styles = {
   grow: {
@@ -48,7 +50,6 @@ class Footer extends Component {
         ? window._env_.REACT_APP_INSTANCE
         : process.env.REACT_APP_INSTANCE;
 
-    const git_json = require('../assets/json/version.json');
     let version = '--';
     let vlink = null;
 
@@ -58,7 +59,7 @@ class Footer extends Component {
     ) {
       version = git_json.version
         ? `${git_json.version}`
-        : `${git_json.git.sha1}`;
+        : `${git_json.git.sha1.substring(0, 10)}`;
 
       vlink = `${git_json.git.repository.replace(/.git$/, '')}/commit/${
         git_json.git.sha1
@@ -69,15 +70,14 @@ class Footer extends Component {
       <footer className={classes.root}>
         <AppBar position="fixed" color="primary" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <Typography color="inherit">
+            <Typography color="inherit" className={classes.grow}>
               {instance} Portal:{' '}
-            </Typography>
-            <Typography 
-                className={classes.grow} 
-                onClick={() => this.openGithub(vlink)}
-                className={classes.versionLink}
-            >
-              {version}
+              <span 
+                  onClick={() => this.openGithub(vlink)}
+                  className={classes.versionLink}
+              >
+                {version}
+              </span>
             </Typography>
             <Typography color="inherit">Powered by</Typography>
             <img
