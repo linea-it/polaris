@@ -6,8 +6,33 @@ pipeline {
         deployment = 'polaris'
         namespace = 'scienceportal-dev'
         namespace_prod = 'scienceportal'
+        version = gitTagName()
     }
+
     agent any
+
+    String gitTagName() {
+        commit = getCommit()
+        if (commit) {
+            desc = sh(script: "git describe --tags ${commit}", returnStdout: true)?.trim()
+            if (isTag(desc)) {
+                return desc
+            }
+        }
+        return null
+    }
+
+    String getCommit() {
+        return sh(script: 'git rev-parse HEAD', returnStdout: true)?.trim()
+    }
+    
+    @NonCPS
+    boolean isTag(String desc) {
+        match = desc =~ /.+-[0-9]+-g[0-9A-Fa-f]{6,}$/
+        result = !match
+        match = null // prevent serialisation
+        return result
+    }
 
     stages {
         stage('Test') {
@@ -15,6 +40,8 @@ pipeline {
                 sh 'yarn install'
                 sh 'yarn lint'
                 sh 'yarn test'
+                sh 'echo "VERSION:"'
+                sh 'echo $version'
             }
         }
         stage('Building and push image') {
@@ -30,6 +57,7 @@ pipeline {
             }
             steps {
                 script {
+
                 sh 'docker build -t $registry:$GIT_COMMIT .'
                 docker.withRegistry( '', registryCredential ) {
                     sh 'docker push $registry:$GIT_COMMIT'
@@ -42,9 +70,9 @@ pipeline {
                     -d '{\"argString\": \"-namespace $namespace -image $registry:$GIT_COMMIT -deployment $deployment\"}' \
                     https://fox.linea.gov.br/api/1/job/e79ea1f7-e156-4992-98b6-75995ac4c15a/executions
                   """
+                }
             }
         }
-    }
         stage('Building and Push Image Release') {
             when {
                 expression {
