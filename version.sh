@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-GIT_TAG=$(git describe --tags ${GIT_COMMIT})
+GIT_TAG="$(git describe --tags ${GIT_COMMIT})"
+
+echo "git describe --tags ${GIT_COMMIT}"
 
 cat >./src/assets/json/version.json <<EOF
     {
