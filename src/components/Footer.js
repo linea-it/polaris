@@ -56,13 +56,15 @@ class Footer extends Component {
       Object.entries(git_json).length !== 0 &&
       git_json.constructor === Object
     ) {
-      version = git_json.version
-        ? `${git_json.version}`
-        : `${git_json.git.sha1.substring(0, 10)}`;
-
-      vlink = `${git_json.git.repository.replace(/.git$/, '')}/commit/${
-        git_json.git.sha1
-      }`;
+      if (git_json.tag) {
+        version = `${git_json.tag}`;
+        vlink = `${git_json.url}`;
+      } else {
+        version = `${git_json.sha.substring(0, 7)}`;
+        vlink = `${git_json.url.replace(/.git$/, '')}/commit/${
+          git_json.git.sha
+        }`;
+      }
     }
 
     return (

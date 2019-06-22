@@ -10,11 +10,16 @@ pipeline {
     agent any
 
     stages {
-        stage('Test') {
+        stage('Testing') {
             steps {
                 sh 'yarn install'
                 sh 'yarn lint'
                 sh 'yarn test'
+            }
+        }
+        stage('Creating version.json') {
+            steps {
+                sh './version.sh && cat version.json'
             }
         }
         stage('Building and push image') {
