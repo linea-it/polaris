@@ -1,4 +1,4 @@
-# DES Processes Monitor
+# DES Portal Monitor
 
 This tool has the purpose of monitoring executions of pipelines in the DES portal, as well as providing the history of executions and consumption information by process. This interface is part of a set of micro services of the DES portal, and is required to use centaurus API for data rescue.
 
@@ -32,3 +32,4 @@ yarn start
 cp docker-compose.yml.template docker-compose.yml
 docker-compose up
 ```
+---
