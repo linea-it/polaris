@@ -110,7 +110,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'tguser_display_name', title: 'Owner' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
-        { name: 'processes_flag_published', title: 'Published' },
+        { name: 'processes_published_date', title: 'Published' },
       ],
       defaultColumnWidths: [
         { columnName: 'processes_process_id', width: 140 },
@@ -124,7 +124,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'tguser_display_name', width: 180 },
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 100 },
-        { columnName: 'processes_flag_published', width: 130 },
+        { columnName: 'processes_published_date', width: 130 },
       ],
       data: [],
       sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
@@ -284,7 +284,7 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
-          processes_flag_published: row.node.flagPublished,
+          processes_published_date: row.node.publishedDate,
         };
       });
       this.setState({
@@ -451,8 +451,10 @@ class TableMyProcesses extends React.PureComponent {
 
   renderSaved = rowData => {
     const { classes } = this.props;
-
-    if (rowData.saved) {
+    if (rowData.saved && rowData.saved.savedDateEnd) {
+      const tooltDate = moment
+        .utc(rowData.saved.savedDateEnd)
+        .format('YYYY-MM-DD');
       if (rowData.saved.savedDateEnd === null) {
         return (
           <CircularProgress
@@ -461,7 +463,11 @@ class TableMyProcesses extends React.PureComponent {
           />
         );
       } else {
-        return <Icon className={classes.iconCheck}>check</Icon>;
+        return (
+          <Icon title={tooltDate} className={classes.iconCheck}>
+            check
+          </Icon>
+        );
       }
     } else if (rowData.saved === null) {
       return '-';
@@ -470,14 +476,19 @@ class TableMyProcesses extends React.PureComponent {
 
   renderCheck = rowData => {
     const { classes } = this.props;
-
-    if (rowData.processes_flag_published) {
-      return <Icon className={classes.iconCheck}>check</Icon>;
+    if (rowData.processes_published_date) {
+      const publishedDate = moment
+        .utc(rowData.processes_published_date)
+        .format('YYYY-MM-DD');
+      return (
+        <Icon title={publishedDate} className={classes.iconCheck}>
+          check
+        </Icon>
+      );
     } else {
       return '-';
     }
   };
-
   renderLoading = () => {
     return (
       <CircularProgress
@@ -589,7 +600,7 @@ class TableMyProcesses extends React.PureComponent {
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
       row.saved = this.renderSaved(row);
-      row.processes_flag_published = this.renderCheck(row);
+      row.processes_published_date = this.renderCheck(row);
       return row;
     });
 
