@@ -1,10 +1,8 @@
-
 FROM node:8.10 as builder
 COPY . /src/app
 WORKDIR /src/app
 RUN yarn -v
 RUN yarn --ignore-optional
-RUN node node_modules/.bin/get-git-version -o src/assets/json/version.json
 RUN yarn run build
 FROM nginx:latest
 RUN chgrp nginx /var/cache/nginx/
@@ -14,8 +12,6 @@ COPY --from=builder /src/app/build /var/www/monitor
 RUN chgrp nginx /var/www/monitor
 RUN chmod -R g+w /var/www/monitor
 COPY nginx-proxy.conf /etc/nginx/conf.d/default.conf
-
-
 
 # RUNTIME ENV
 COPY env.sh /var/www/monitor
