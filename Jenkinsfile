@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Creating version.json') {
             steps {
-                sh './version.sh && cat version.json'
+                sh './version.sh && cat ./src/assets/json/version.json'
             }
         }
         stage('Building and push image') {
