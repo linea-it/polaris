@@ -16,7 +16,7 @@ cp .env.template .env
 
 **2. Configuring the Centaurus API**
 
-- Modify `REACT_APP_API_URL key` in `.env` to a valid Centaurus API url <a href="https://github.com/linea-it/centaurus.git" target="_blank">(see Centaurus API).</a>
+Modify `REACT_APP_API_URL key` in `.env` to a valid Centaurus API url <a href="https://github.com/linea-it/centaurus.git" target="_blank">(see Centaurus API).</a>
 
 **3. Running** 
 
