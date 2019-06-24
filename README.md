@@ -36,3 +36,8 @@ docker-compose up
 > Running at URL: http://localhost/monitor
 
 ---
+
+## Release History
+
+* 1.0.0
+    * INIT: First version
