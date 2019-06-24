@@ -25,6 +25,7 @@ Modify `REACT_APP_API_URL key` in `.env` to a valid Centaurus API url <a href="h
 yarn install
 yarn start
 ```
+> Running at URL: http://localhost:3000
 
 - Or by docker using docker-compose:
 > Modify `REACT_APP_API_URL` key in `docker-compose.yml` to a valid Centaurus API url <a href="https://github.com/linea-it/centaurus.git" target="_blank">(see Centaurus API).</a>
@@ -32,4 +33,6 @@ yarn start
 cp docker-compose.yml.template docker-compose.yml
 docker-compose up
 ```
+> Running at URL: http://localhost/monitor
+
 ---
