@@ -39,5 +39,9 @@ docker-compose up
 
 ## Release History
 
-* 1.0.0
-    * INIT: First version
+* v1.0.0
+   * INIT: First version
+* v1.0.1
+   * Table sorting disabled (only some columns)
+   * Updates on README.rd
+
