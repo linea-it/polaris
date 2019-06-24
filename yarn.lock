@@ -3976,12 +3976,6 @@ get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
 
-get-git-version@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/get-git-version/-/get-git-version-0.2.1.tgz#e5b6164c5edcae2518edd07c70d77dfba382f9c2"
-  dependencies:
-    commander "^2.19.0"
-
 get-own-enumerable-property-symbols@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/get-own-enumerable-property-symbols/-/get-own-enumerable-property-symbols-3.0.0.tgz#b877b49a5c16aefac3655f2ed2ea5b684df8d203"

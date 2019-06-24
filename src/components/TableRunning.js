@@ -543,11 +543,15 @@ class TableMyProcesses extends React.PureComponent {
           columnExtensions={[
             { columnName: 'processes_start_date', sortingEnabled: false },
             { columnName: 'duration', sortingEnabled: false },
-            { columnName: 'instance', sortingEnabled: false },
-            { columnName: 'release', sortingEnabled: false },
-            { columnName: 'dataset', sortingEnabled: false },
-            { columnName: 'owner', sortingEnabled: false },
             { columnName: 'saved', sortingEnabled: false },
+            // Temporary sorting disabled:
+            { columnName: 'processes_name', sortingEnabled: false },
+            {
+              columnName: 'releasetag_release_display_name',
+              sortingEnabled: false,
+            },
+            { columnName: 'fields_display_name', sortingEnabled: false },
+            { columnName: 'processstatus_display_name', sortingEnabled: false },
           ]}
         />
         <PagingState
