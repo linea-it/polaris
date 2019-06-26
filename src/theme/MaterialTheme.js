@@ -18,7 +18,7 @@ const theme = createMuiTheme({
   overrides: {
     Pagination: {
       activeButton: {
-        fontSize: 28,
+        color: pink[500],
       },
     },
   },
