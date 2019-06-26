@@ -15,6 +15,13 @@ const theme = createMuiTheme({
     fontSize: 16,
     useNextVariants: true,
   },
+  overrides: {
+    Pagination: {
+      activeButton: {
+        fontSize: 28,
+      },
+    },
+  },
 });
 
 export default theme;
