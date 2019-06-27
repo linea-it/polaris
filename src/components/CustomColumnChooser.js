@@ -23,6 +23,8 @@ class CustomColumnChooser extends Component {
   }
 
   containerComponent = columns => {
+    let isAllChecked = true;
+
     return (
       <Paper style={styles.chooserPaperWrapper}>
         {columns.children.map((column, index) => {
@@ -31,15 +33,23 @@ class CustomColumnChooser extends Component {
           const toggle = column.props.onToggle;
           const isFirstIndex = index === 0 ? true : false;
 
+          if (column.props.item.hidden === true) {
+            isAllChecked = false;
+          }
+
           return (
             <React.Fragment key={key}>
               {isFirstIndex ? (
-                <React.Fragment key={key}>
+                <React.Fragment>
                   <FormGroup row style={styles.chooserFormGroupWrapper}>
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={this.state.chooserAllChecked}
+                          checked={
+                            isAllChecked === false
+                              ? isAllChecked
+                              : this.state.chooserAllChecked
+                          }
                           value="all"
                           onChange={() =>
                             this.handleToggleAll(columns.children)
@@ -52,7 +62,7 @@ class CustomColumnChooser extends Component {
                   <Divider />
                 </React.Fragment>
               ) : null}
-              <FormGroup row key={key} style={styles.chooserFormGroupWrapper}>
+              <FormGroup row style={styles.chooserFormGroupWrapper}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -69,6 +79,14 @@ class CustomColumnChooser extends Component {
             </React.Fragment>
           );
         })}
+        {/*
+          In case of changing the state, the following warning will appear:
+          "Warning: Cannot update during an existing state transition (such as within `render`).
+          Render methods should be a pure function of props and state."
+        */}
+        {!isAllChecked
+          ? this.setState({ chooserAllChecked: isAllChecked })
+          : null}
       </Paper>
     );
   };
