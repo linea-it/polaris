@@ -1,9 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
@@ -28,14 +25,13 @@ import {
   SearchPanel,
   TableSelection,
   TableColumnVisibility,
-  ColumnChooser,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
-import Divider from '@material-ui/core/Divider';
+import CustomColumnChooser from './CustomColumnChooser';
 
 const styles = {
   wrapPaper: {
@@ -81,12 +77,6 @@ const styles = {
     top: '8px',
     left: '24px',
     zIndex: '999',
-  },
-  chooserPaperWrapper: {
-    maxHeight: 'auto',
-  },
-  chooserFormGroupWrapper: {
-    padding: '0 16px',
   },
 };
 
@@ -535,97 +525,6 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  handleToggle = (currentColumnIndex, columns, toggle) => {
-    toggle();
-    let isAllChecked = true;
-    columns.map((column, index) => {
-      if (currentColumnIndex === index && column.props.item.hidden === false) {
-        isAllChecked = false;
-      } else if (
-        currentColumnIndex !== index &&
-        column.props.item.hidden === true
-      ) {
-        isAllChecked = false;
-      }
-    });
-
-    this.setState({ chooserAllChecked: isAllChecked });
-  };
-
-  handleToggleAll = columns => {
-    this.setState({
-      chooserAllChecked: !this.state.chooserAllChecked,
-    });
-
-    columns.map(column => {
-      if (this.state.chooserAllChecked) {
-        if (!column.props.item.hidden) {
-          column.props.onToggle();
-        }
-      } else {
-        if (column.props.item.hidden) {
-          column.props.onToggle();
-        }
-      }
-    });
-  };
-
-  containerComponent = columns => {
-    const { classes } = this.props;
-    return (
-      <Paper className={classes.chooserPaperWrapper}>
-        {columns.children.map((column, index) => {
-          const key = column.key;
-          const item = column.props.item.column;
-          const toggle = column.props.onToggle;
-          const isFirstIndex = index === 0 ? true : false;
-
-          return (
-            <React.Fragment key={key}>
-              {isFirstIndex ? (
-                <React.Fragment key={key}>
-                  <FormGroup row className={classes.chooserFormGroupWrapper}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.chooserAllChecked}
-                          value="all"
-                          onChange={() =>
-                            this.handleToggleAll(columns.children)
-                          }
-                        />
-                      }
-                      label="All"
-                    />
-                  </FormGroup>
-                  <Divider />
-                </React.Fragment>
-              ) : null}
-              <FormGroup
-                row
-                key={key}
-                className={classes.chooserFormGroupWrapper}
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={!column.props.item.hidden}
-                      value={item.name}
-                      onChange={() =>
-                        this.handleToggle(index, columns.children, toggle)
-                      }
-                    />
-                  }
-                  label={item.title}
-                />
-              </FormGroup>
-            </React.Fragment>
-          );
-        })}
-      </Paper>
-    );
-  };
-
   renderTable = () => {
     const {
       data,
@@ -685,7 +584,7 @@ class TableMyProcesses extends React.PureComponent {
         <PagingPanel pageSizes={pageSizes} />
         <Toolbar />
         <SearchPanel />
-        <ColumnChooser containerComponent={this.containerComponent} />
+        <CustomColumnChooser />
       </Grid>
     );
   };
