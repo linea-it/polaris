@@ -25,7 +25,6 @@ import {
   SearchPanel,
   TableSelection,
   TableColumnVisibility,
-  ColumnChooser,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -35,6 +34,7 @@ import moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
+import CustomColumnChooser from './CustomColumnChooser';
 
 const styles = {
   wrapPaper: {
@@ -141,6 +141,7 @@ class TableMyProcesses extends React.PureComponent {
       visible: false,
       modalType: '',
       rowsDatasetRunning: [],
+      chooserAllChecked: true,
     };
   }
 
@@ -643,7 +644,7 @@ class TableMyProcesses extends React.PureComponent {
           <PagingPanel pageSizes={pageSizes} />
           <Toolbar />
           <SearchPanel />
-          <ColumnChooser />
+          <CustomColumnChooser />
         </Grid>
         {this.renderModal()}
       </React.Fragment>
