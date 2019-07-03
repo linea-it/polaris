@@ -25,13 +25,13 @@ import {
   SearchPanel,
   TableSelection,
   TableColumnVisibility,
-  ColumnChooser,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
+import CustomColumnChooser from './CustomColumnChooser';
 
 const styles = {
   wrapPaper: {
@@ -137,6 +137,7 @@ class TableMyProcesses extends React.PureComponent {
       selection: [],
       filter: 'all',
       searchValue: '',
+      chooserAllChecked: true,
     };
   }
 
@@ -583,7 +584,7 @@ class TableMyProcesses extends React.PureComponent {
         <PagingPanel pageSizes={pageSizes} />
         <Toolbar />
         <SearchPanel />
-        <ColumnChooser />
+        <CustomColumnChooser />
       </Grid>
     );
   };
