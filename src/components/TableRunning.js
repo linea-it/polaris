@@ -31,6 +31,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import TableDataset from './TableDataset';
 import CustomColumnChooser from './CustomColumnChooser';
 
 const styles = {
@@ -105,7 +108,6 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'processes_instance', title: 'Instance' },
-        { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
         { name: 'tguser_display_name', title: 'Owner' },
         { name: 'processstatus_display_name', title: 'Status' },
@@ -119,7 +121,6 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'duration', width: 110 },
         { columnName: 'processes_name', width: 180 },
         { columnName: 'processes_instance', width: 180 },
-        { columnName: 'releasetag_release_display_name', width: 180 },
         { columnName: 'fields_display_name', width: 180 },
         { columnName: 'tguser_display_name', width: 180 },
         { columnName: 'processstatus_display_name', width: 110 },
@@ -137,6 +138,9 @@ class TableMyProcesses extends React.PureComponent {
       selection: [],
       filter: 'all',
       searchValue: '',
+      visible: false,
+      modalType: '',
+      rowsDatasetRunning: [],
       chooserAllChecked: true,
     };
   }
@@ -379,20 +383,64 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderRelease = rowData => {
-    if (rowData.releasetag_release_display_name) {
+  renderContentModal = () => {
+    if (this.state.modalType === 'Datasets') {
       return (
-        <span title={rowData.releasetag_release_display_name}>
-          {rowData.releasetag_release_display_name}
-        </span>
+        <TableDataset
+          rowsDatasetRunning={this.state.rowsDatasetRunning}
+          loadData={this.loadData}
+        />
       );
-    } else {
-      return '-';
     }
+  };
+
+  renderModal = () => {
+    const title = this.state.modalType;
+    return (
+      <Dialog
+        onClose={this.onHideModal}
+        open={this.state.visible}
+        aria-labelledby={title}
+      >
+        {this.renderContentModal()}
+      </Dialog>
+    );
+  };
+
+  onShowDatasets = rows => {
+    this.onClickModal(rows, 'Datasets');
+    this.setState({
+      rowsDatasetRunning: rows,
+    });
   };
 
   renderDataset = rowData => {
     if (rowData.fields_display_name) {
+      const releases = rowData.releasetag_release_display_name;
+      const datasets = rowData.fields_display_name;
+      if (datasets.length > 1) {
+        // datasets = datasets.filter((el, i) => datasets.indexOf(el) === i);
+        // releases = releases.filter((el, i) => releases.indexOf(el) === i);
+
+        const rows = datasets.map((el, i) => {
+          return {
+            dataset: el,
+            release: releases[i],
+          };
+        });
+
+        return (
+          <React.Fragment>
+            <Button
+              style={styles.btnIco}
+              onClick={() => this.onShowDatasets(rows)}
+            >
+              <Icon>format_list_bulleted</Icon>
+            </Button>
+          </React.Fragment>
+        );
+      }
+
       return (
         <span title={rowData.fields_display_name}>
           {rowData.fields_display_name}
@@ -525,6 +573,18 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
+  onHideModal = () => {
+    this.setState({ visible: false });
+  };
+
+  onClickModal = (rows, modalType) => {
+    this.setState({
+      visible: true,
+      modalType: modalType,
+      rowsDatasetRunning: rows,
+    });
+  };
+
   renderTable = () => {
     const {
       data,
@@ -539,53 +599,55 @@ class TableMyProcesses extends React.PureComponent {
     } = this.state;
 
     return (
-      <Grid rows={data} columns={columns}>
-        <SearchState onValueChange={this.changeSearchValue} />
-        <SortingState
-          sorting={sorting}
-          onSortingChange={this.changeSorting}
-          columnExtensions={[
-            { columnName: 'processes_start_date', sortingEnabled: false },
-            { columnName: 'duration', sortingEnabled: false },
-            { columnName: 'saved', sortingEnabled: false },
-            // Temporary sorting disabled:
-            { columnName: 'processes_name', sortingEnabled: false },
-            {
-              columnName: 'releasetag_release_display_name',
-              sortingEnabled: false,
-            },
-            { columnName: 'fields_display_name', sortingEnabled: false },
-            { columnName: 'processstatus_display_name', sortingEnabled: false },
-          ]}
-        />
-        <PagingState
-          currentPage={currentPage}
-          onCurrentPageChange={this.changeCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={this.changePageSize}
-        />
-        <CustomPaging totalCount={totalCount} />
-        <SelectionState
-          selection={selection}
-          onSelectionChange={this.changeSelection}
-        />
-        <Table />
-        <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-        <TableHeaderRow
-          cellComponent={tableHeaderRowCell}
-          showSortingControls
-        />
-        <TableColumnVisibility />
-        <TableSelection
-          selectByRowClick
-          highlightRow
-          showSelectionColumn={false}
-        />
-        <PagingPanel pageSizes={pageSizes} />
-        <Toolbar />
-        <SearchPanel />
-        <CustomColumnChooser />
-      </Grid>
+      <React.Fragment>
+        <Grid rows={data} columns={columns}>
+          <SearchState onValueChange={this.changeSearchValue} />
+          <SortingState
+            sorting={sorting}
+            onSortingChange={this.changeSorting}
+            columnExtensions={[
+              { columnName: 'processes_start_date', sortingEnabled: false },
+              { columnName: 'duration', sortingEnabled: false },
+              { columnName: 'saved', sortingEnabled: false },
+              // Temporary sorting disabled:
+              { columnName: 'processes_name', sortingEnabled: false },
+              { columnName: 'fields_display_name', sortingEnabled: false },
+              {
+                columnName: 'processstatus_display_name',
+                sortingEnabled: false,
+              },
+            ]}
+          />
+          <PagingState
+            currentPage={currentPage}
+            onCurrentPageChange={this.changeCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={this.changePageSize}
+          />
+          <CustomPaging totalCount={totalCount} />
+          <SelectionState
+            selection={selection}
+            onSelectionChange={this.changeSelection}
+          />
+          <Table />
+          <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
+          <TableHeaderRow
+            cellComponent={tableHeaderRowCell}
+            showSortingControls
+          />
+          <TableColumnVisibility />
+          <TableSelection
+            selectByRowClick
+            highlightRow
+            showSelectionColumn={false}
+          />
+          <PagingPanel pageSizes={pageSizes} />
+          <Toolbar />
+          <SearchPanel />
+          <CustomColumnChooser />
+        </Grid>
+        {this.renderModal()}
+      </React.Fragment>
     );
   };
 
@@ -600,7 +662,6 @@ class TableMyProcesses extends React.PureComponent {
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
       row.processes_instance = this.renderInstance(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
       row.fields_display_name = this.renderDataset(row);
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
