@@ -193,6 +193,7 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   changeSearchValue = searchValue => {
+    this.clearData();
     this.setState(
       {
         loading: true,
@@ -235,6 +236,8 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       data: [],
       loading: false,
+      currentPage: 0,
+      after: '',
     });
   };
 
