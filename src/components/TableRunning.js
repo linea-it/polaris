@@ -679,8 +679,8 @@ class TableMyProcesses extends React.PureComponent {
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
       row.processes_instance = this.renderInstance(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
       row.fields_display_name = this.renderDataset(row);
+      row.releasetag_release_display_name = this.renderRelease(row);
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
       row.saved = this.renderSaved(row);
