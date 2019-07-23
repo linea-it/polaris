@@ -104,7 +104,7 @@ class TableMyProcesses extends React.PureComponent {
       columns: [
         { name: 'processes_process_id', title: 'Process ID' },
         { name: 'processes_start_time', title: 'Start Date' },
-        { name: 'processes_start_date', title: 'Start Time' },
+        // { name: 'processes_start_date', title: 'Start Time' },
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'processes_instance', title: 'Instance' },
@@ -332,22 +332,22 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderStartDate = rowData => {
-    if (rowData.processes_start_date) {
-      return (
-        <span title={rowData.processes_start_date}>
-          {rowData.processes_start_date}
-        </span>
-      );
-    } else {
-      return '-';
-    }
-  };
+  // renderStartDate = rowData => {
+  //   if (rowData.processes_start_date) {
+  //     return (
+  //       <span title={rowData.processes_start_date}>
+  //         {rowData.processes_start_date}
+  //       </span>
+  //     );
+  //   } else {
+  //     return '-';
+  //   }
+  // };
 
   renderStartTime = rowData => {
     if (rowData.processes_start_time) {
       return (
-        <span title={rowData.processes_start_time}>
+        <span title={rowData.processes_start_date}>
           {rowData.processes_start_time}
         </span>
       );
@@ -660,7 +660,7 @@ class TableMyProcesses extends React.PureComponent {
 
     data.map(row => {
       row.processes_process_id = this.renderProcessesId(row);
-      row.processes_start_date = this.renderStartDate(row);
+      // row.processes_start_date = this.renderStartDate(row);
       row.processes_start_time = this.renderStartTime(row);
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
