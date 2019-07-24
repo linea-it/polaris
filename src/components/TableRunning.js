@@ -35,6 +35,12 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
 import CustomColumnChooser from './CustomColumnChooser';
+import createPlotlyComponent from 'react-plotly.js/factory';
+import Plotly from 'plotly.js';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+const Plot = createPlotlyComponent(Plotly);
 
 const styles = {
   wrapPaper: {
@@ -80,6 +86,12 @@ const styles = {
     top: '8px',
     left: '24px',
     zIndex: '999',
+  },
+  processIdBtn: {
+    color: 'blue',
+    fontWeight: 'normal',
+    textDecoration: 'underline',
+    cursor: 'pointer',
   },
 };
 
@@ -144,6 +156,7 @@ class TableMyProcesses extends React.PureComponent {
       modalType: '',
       rowsDatasetRunning: [],
       chooserAllChecked: true,
+      timeProfileData: [],
     };
   }
 
@@ -325,7 +338,11 @@ class TableMyProcesses extends React.PureComponent {
   renderProcessesId = rowData => {
     if (rowData.processes_process_id) {
       return (
-        <span title={rowData.processes_process_id}>
+        <span
+          title={rowData.processes_process_id}
+          onClick={this.onShowProcessPlot}
+          style={styles.processIdBtn}
+        >
           {rowData.processes_process_id}
         </span>
       );
@@ -396,6 +413,66 @@ class TableMyProcesses extends React.PureComponent {
           loadData={this.loadData}
         />
       );
+    } else if (this.state.modalType === 'Process') {
+      if (this.state.timeProfileData && this.state.timeProfileData.length > 0) {
+        const data = this.state.timeProfileData.map(line => {
+          const hid = line.jobs.map(job => job.hid);
+
+          const time = line.jobs.map(job => {
+            // const start_date = moment(job.startTime);
+            const end_date = moment(job.endTime);
+            return end_date.format('YYYY-MM-DD HH:mm:ss');
+            // return moment.duration(end_date.diff(start_date))._data.seconds;
+          });
+
+          return {
+            name: line.displayName,
+            x: time,
+            y: hid,
+            type: 'histogram',
+            legendgroup: line.moduleName,
+            showlegend: true,
+            hoverinfo: 'name',
+          };
+        });
+
+        return (
+          <Plot
+            data={data}
+            layout={{
+              width: 800,
+              height: 600,
+              title: 'Time Profiler',
+              xaxis: {
+                title: 'Execution Time',
+                automargin: true,
+                autorange: true,
+              },
+              yaxis: {
+                title: 'HID',
+                automargin: true,
+                autorange: true,
+              },
+            }}
+            config={{
+              scrollZoom: true,
+            }}
+          />
+        );
+      }
+      return (
+        <React.Fragment>
+          <DialogTitle>Time Profiler</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Unable to generate plot due to a lack of data!
+              <br />
+              Please, verify the status of the process you are trying to
+              analyze.
+            </DialogContentText>
+          </DialogContent>
+        </React.Fragment>
+      );
     }
   };
 
@@ -406,6 +483,7 @@ class TableMyProcesses extends React.PureComponent {
         onClose={this.onHideModal}
         open={this.state.visible}
         aria-labelledby={title}
+        maxWidth={this.state.modalType === 'Process' ? 'lg' : 'sm'}
       >
         {this.renderContentModal()}
       </Dialog>
@@ -417,6 +495,10 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       rowsDatasetRunning: rows,
     });
+  };
+
+  onShowProcessPlot = e => {
+    this.onClickModal(e.target.innerHTML, 'Process');
   };
 
   renderRelease = rowData => {
@@ -436,9 +518,6 @@ class TableMyProcesses extends React.PureComponent {
       const releases = rowData.releasetag_release_display_name;
       const datasets = rowData.fields_display_name;
       if (datasets.length > 1) {
-        // datasets = datasets.filter((el, i) => datasets.indexOf(el) === i);
-        // releases = releases.filter((el, i) => releases.indexOf(el) === i);
-
         const rows = datasets.map((el, i) => {
           return {
             dataset: el,
@@ -594,12 +673,23 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({ visible: false });
   };
 
-  onClickModal = (rows, modalType) => {
-    this.setState({
-      visible: true,
-      modalType: modalType,
-      rowsDatasetRunning: rows,
-    });
+  onClickModal = (data, modalType) => {
+    if (modalType === 'Datasets') {
+      this.setState({
+        visible: true,
+        modalType: modalType,
+        rowsDatasetRunning: data,
+      });
+    } else if (modalType === 'Process') {
+      const timeProfile = Centaurus.getTimeProfile(data);
+      timeProfile.then(res =>
+        this.setState({
+          visible: true,
+          modalType: modalType,
+          timeProfileData: res,
+        })
+      );
+    }
   };
 
   renderTable = () => {
@@ -679,8 +769,8 @@ class TableMyProcesses extends React.PureComponent {
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
       row.processes_instance = this.renderInstance(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
       row.fields_display_name = this.renderDataset(row);
+      row.releasetag_release_display_name = this.renderRelease(row);
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
       row.saved = this.renderSaved(row);
