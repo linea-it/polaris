@@ -107,6 +107,7 @@ export default class Centaurus {
           }
         }
       `);
+
       return query.timeProfile.edges.map(item => ({
         id: item.node.id,
         displayName: item.node.displayName,
