@@ -85,4 +85,39 @@ export default class Centaurus {
       return null;
     }
   }
+
+  static async getTimeProfile(processId) {
+    try {
+      const query = await client.query(`
+        {
+          timeProfile(processId: ${processId}) {
+            edges {
+              node {
+                id
+                displayName
+                moduleName
+                jobs {
+                  endTime
+                  startTime
+                  ncIp
+                  hid
+                }
+              }
+            }
+          }
+        }
+      `);
+
+      return query.timeProfile.edges.map(item => ({
+        id: item.node.id,
+        displayName: item.node.displayName,
+        moduleName: item.node.moduleName,
+        jobs: item.node.jobs,
+      }));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      return null;
+    }
+  }
 }

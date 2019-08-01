@@ -35,6 +35,11 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
 import CustomColumnChooser from './CustomColumnChooser';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import AccessAlarm from '@material-ui/icons/AccessAlarm';
+import TimeProfile from './TimeProfile';
 
 const styles = {
   wrapPaper: {
@@ -81,6 +86,12 @@ const styles = {
     left: '24px',
     zIndex: '999',
   },
+  processIdBtn: {
+    color: 'blue',
+    fontWeight: 'normal',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
 };
 
 const tableHeaderRowCell = ({ ...restProps }) => (
@@ -104,9 +115,9 @@ class TableMyProcesses extends React.PureComponent {
       columns: [
         { name: 'processes_process_id', title: 'Process ID' },
         { name: 'processes_start_time', title: 'Start Date' },
-        // { name: 'processes_start_date', title: 'Start Time' },
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
+        { name: 'time_profile', title: 'Time Profile' },
         { name: 'processes_instance', title: 'Instance' },
         { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
@@ -117,13 +128,14 @@ class TableMyProcesses extends React.PureComponent {
       ],
       defaultColumnWidths: [
         { columnName: 'processes_process_id', width: 140 },
-        { columnName: 'processes_start_time', width: 140 },
+        { columnName: 'processes_start_time', width: 120 },
         { columnName: 'processes_start_date', width: 120 },
         { columnName: 'duration', width: 110 },
-        { columnName: 'processes_name', width: 180 },
-        { columnName: 'processes_instance', width: 180 },
-        { columnName: 'releasetag_release_display_name', width: 180 },
-        { columnName: 'fields_display_name', width: 180 },
+        { columnName: 'processes_name', width: 140 },
+        { columnName: 'time_profile', width: 140 },
+        { columnName: 'processes_instance', width: 140 },
+        { columnName: 'releasetag_release_display_name', width: 110 },
+        { columnName: 'fields_display_name', width: 140 },
         { columnName: 'tguser_display_name', width: 180 },
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 100 },
@@ -144,6 +156,7 @@ class TableMyProcesses extends React.PureComponent {
       modalType: '',
       rowsDatasetRunning: [],
       chooserAllChecked: true,
+      timeProfileData: [],
     };
   }
 
@@ -334,18 +347,6 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  // renderStartDate = rowData => {
-  //   if (rowData.processes_start_date) {
-  //     return (
-  //       <span title={rowData.processes_start_date}>
-  //         {rowData.processes_start_date}
-  //       </span>
-  //     );
-  //   } else {
-  //     return '-';
-  //   }
-  // };
-
   renderStartTime = rowData => {
     if (rowData.processes_start_time) {
       return (
@@ -388,28 +389,71 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderContentModal = () => {
-    if (this.state.modalType === 'Datasets') {
+  renderTimeProfile = rowData => {
+    if (rowData.processes_process_id) {
       return (
-        <TableDataset
-          rowsDatasetRunning={this.state.rowsDatasetRunning}
-          loadData={this.loadData}
-        />
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={this.onShowProcessPlot}
+            title={rowData.processes_process_id}
+          >
+            <AccessAlarm title={rowData.processes_process_id} />
+          </Button>
+        </React.Fragment>
       );
+    } else {
+      return '-';
     }
   };
 
   renderModal = () => {
-    const title = this.state.modalType;
-    return (
-      <Dialog
-        onClose={this.onHideModal}
-        open={this.state.visible}
-        aria-labelledby={title}
-      >
-        {this.renderContentModal()}
-      </Dialog>
-    );
+    if (this.state.modalType === 'Datasets') {
+      return (
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
+          <TableDataset
+            rowsDatasetRunning={this.state.rowsDatasetRunning}
+            loadData={this.loadData}
+          />
+        </Dialog>
+      );
+    } else if (this.state.modalType === 'Profile') {
+      if (this.state.timeProfileData && this.state.timeProfileData.length > 0) {
+        return (
+          <Dialog
+            onClose={this.onHideModal}
+            open={this.state.visible}
+            aria-labelledby={this.state.modalType}
+            maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+          >
+            <TimeProfile data={this.state.timeProfileData} />
+          </Dialog>
+        );
+      }
+      return (
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
+          <DialogTitle>Time Profiler</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Unable to generate plot due to a lack of data!
+              <br />
+              Please, verify the status of the process you are trying to
+              analyze.
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      );
+    }
   };
 
   onShowDatasets = rows => {
@@ -417,6 +461,10 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       rowsDatasetRunning: rows,
     });
+  };
+
+  onShowProcessPlot = e => {
+    this.onClickModal(e.target.getAttribute('title'), 'Profile');
   };
 
   renderRelease = rowData => {
@@ -436,9 +484,6 @@ class TableMyProcesses extends React.PureComponent {
       const releases = rowData.releasetag_release_display_name;
       const datasets = rowData.fields_display_name;
       if (datasets.length > 1) {
-        // datasets = datasets.filter((el, i) => datasets.indexOf(el) === i);
-        // releases = releases.filter((el, i) => releases.indexOf(el) === i);
-
         const rows = datasets.map((el, i) => {
           return {
             dataset: el,
@@ -594,12 +639,23 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({ visible: false });
   };
 
-  onClickModal = (rows, modalType) => {
-    this.setState({
-      visible: true,
-      modalType: modalType,
-      rowsDatasetRunning: rows,
-    });
+  onClickModal = (data, modalType) => {
+    if (modalType === 'Datasets') {
+      this.setState({
+        visible: true,
+        modalType: modalType,
+        rowsDatasetRunning: data,
+      });
+    } else if (modalType === 'Profile') {
+      const timeProfile = Centaurus.getTimeProfile(data);
+      timeProfile.then(res =>
+        this.setState({
+          visible: true,
+          modalType: modalType,
+          timeProfileData: res,
+        })
+      );
+    }
   };
 
   renderTable = () => {
@@ -673,6 +729,7 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     data.map(row => {
+      row.time_profile = this.renderTimeProfile(row);
       row.processes_process_id = this.renderProcessesId(row);
       // row.processes_start_date = this.renderStartDate(row);
       row.processes_start_time = this.renderStartTime(row);
