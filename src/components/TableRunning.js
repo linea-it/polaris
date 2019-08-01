@@ -407,20 +407,41 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderContentModal = () => {
+  renderModal = () => {
     if (this.state.modalType === 'Datasets') {
       return (
-        <TableDataset
-          rowsDatasetRunning={this.state.rowsDatasetRunning}
-          loadData={this.loadData}
-        />
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
+          <TableDataset
+            rowsDatasetRunning={this.state.rowsDatasetRunning}
+            loadData={this.loadData}
+          />
+        </Dialog>
       );
     } else if (this.state.modalType === 'Profile') {
       if (this.state.timeProfileData && this.state.timeProfileData.length > 0) {
-        return <TimeProfile data={this.state.timeProfileData} />;
+        return (
+          <Dialog
+            onClose={this.onHideModal}
+            open={this.state.visible}
+            aria-labelledby={this.state.modalType}
+            maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+          >
+            <TimeProfile data={this.state.timeProfileData} />
+          </Dialog>
+        );
       }
       return (
-        <React.Fragment>
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
           <DialogTitle>Time Profiler</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -430,23 +451,9 @@ class TableMyProcesses extends React.PureComponent {
               analyze.
             </DialogContentText>
           </DialogContent>
-        </React.Fragment>
+        </Dialog>
       );
     }
-  };
-
-  renderModal = () => {
-    const title = this.state.modalType;
-    return (
-      <Dialog
-        onClose={this.onHideModal}
-        open={this.state.visible}
-        aria-labelledby={title}
-        maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
-      >
-        {this.renderContentModal()}
-      </Dialog>
-    );
   };
 
   onShowDatasets = rows => {

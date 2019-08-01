@@ -12,6 +12,7 @@
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
     "dotenv": "^6.2.0",
+    "jest-canvas-mock": "^2.1.0",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.6.1",
     "moment": "^2.23.0",
@@ -52,7 +53,8 @@
   },
   "jest": {
     "setupFiles": [
-      "./setup-jest.js"
+      "./setup-jest.js",
+      "jest-canvas-mock"
     ],
     "moduleNameMapper": {
       ".+\\.(svg|css|png|jpeg)$": "jest-transform-stub"
