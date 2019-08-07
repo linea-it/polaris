@@ -1,28 +1,9 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import App from './App';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 
-configure({ adapter: new Adapter() });
-
-describe('App', () => {
-  let wrapper;
-
-  beforeEach(() => {
-    const app = <App />;
-    wrapper = mount(app);
-  });
-
-  it('Mounts', () => {
-    expect(
-      wrapper
-        .find('Button')
-        .at(0)
-        .text()
-    ).toBe('1');
-  });
-
-  afterEach(() => {
-    wrapper.unmount();
-  });
+it('renders without crashing', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(<App />, div);
+  ReactDOM.unmountComponentAtNode(div);
 });

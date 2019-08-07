@@ -9,8 +9,9 @@
     "@devexpress/dx-react-core": "^1.10.5",
     "@devexpress/dx-react-grid": "^1.10.5",
     "@devexpress/dx-react-grid-material-ui": "^1.10.5",
-    "@material-ui/core": "^3.9.2",
+    "@material-ui/core": "^4.3.1",
     "@material-ui/icons": "^3.0.2",
+    "@material-ui/styles": "^4.3.0",
     "dotenv": "^6.2.0",
     "jest-canvas-mock": "^2.1.0",
     "lokka": "^1.7.0",
@@ -52,6 +53,9 @@
     "extends": "react-app"
   },
   "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
     "setupFiles": [
       "./setup-jest.js",
       "jest-canvas-mock"
