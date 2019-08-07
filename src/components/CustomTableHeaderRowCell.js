@@ -69,7 +69,11 @@ SortingIcon.propTypes = {
 
 SortLabel.propTypes = {
   onSort: PropTypes.func.isRequired,
-  children: PropTypes.shape({ root: PropTypes.symbol }).isRequired,
+  children: PropTypes.shape({
+    root: PropTypes.symbol,
+    props: PropTypes.object,
+    children: PropTypes.string,
+  }).isRequired,
   direction: PropTypes.string,
 };
 
