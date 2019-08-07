@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { Typography } from '@material-ui/core';
 import DefaultAvatar from '../assets/img/index.jpeg';
 import Grid from '@material-ui/core/Grid';
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   bigAvatar: {
     // TODO usar margin spacing
     marginLeft: 25,
@@ -21,10 +21,10 @@ const useStyles = makeStyles(theme => ({
     marginTop: 40,
     color: theme.palette.primary.contrastText,
   },
-}));
+});
 
-function ImageAvatars() {
-  const classes = useStyles();
+function ImageAvatars(props) {
+  const { classes } = props;
   return (
     <Grid container alignItems="center" spacing={0}>
       <Grid item xs={6} xl={12}>
@@ -45,4 +45,4 @@ ImageAvatars.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default ImageAvatars;
+export default withStyles(styles)(ImageAvatars);

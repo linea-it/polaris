@@ -5,16 +5,16 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { ColumnChooser } from '@devexpress/dx-react-grid-material-ui';
 import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const styles = {
   chooserPaperWrapper: {
     maxHeight: 'none',
   },
   chooserFormGroupWrapper: {
     padding: '0 26px',
   },
-});
+};
 
 class CustomColumnChooser extends Component {
   constructor(props) {
@@ -23,11 +23,10 @@ class CustomColumnChooser extends Component {
   }
 
   containerComponent = columns => {
-    const classes = useStyles();
     let isAllChecked = true;
 
     return (
-      <Paper style={classes.chooserPaperWrapper}>
+      <Paper style={styles.chooserPaperWrapper}>
         {columns.children.map((column, index) => {
           const key = column.key;
           const item = column.props.item.column;
@@ -42,7 +41,7 @@ class CustomColumnChooser extends Component {
             <React.Fragment key={key}>
               {isFirstIndex ? (
                 <React.Fragment>
-                  <FormGroup row style={classes.chooserFormGroupWrapper}>
+                  <FormGroup row style={styles.chooserFormGroupWrapper}>
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -63,7 +62,7 @@ class CustomColumnChooser extends Component {
                   <Divider />
                 </React.Fragment>
               ) : null}
-              <FormGroup row style={classes.chooserFormGroupWrapper}>
+              <FormGroup row style={styles.chooserFormGroupWrapper}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -132,4 +131,4 @@ class CustomColumnChooser extends Component {
   }
 }
 
-export default CustomColumnChooser;
+export default withStyles(styles)(CustomColumnChooser);
