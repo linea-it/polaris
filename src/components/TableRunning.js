@@ -18,7 +18,6 @@ import {
 import {
   Grid,
   Table,
-  TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
   Toolbar,
@@ -35,6 +34,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
 import CustomColumnChooser from './CustomColumnChooser';
+import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -93,16 +93,6 @@ const styles = {
     cursor: 'pointer',
   },
 };
-
-const tableHeaderRowCell = ({ ...restProps }) => (
-  <TableHeaderRow.Cell
-    {...restProps}
-    style={{
-      color: '#555555',
-      fontSize: '1em',
-    }}
-  />
-);
 
 class TableMyProcesses extends React.PureComponent {
   constructor(props) {
@@ -704,10 +694,7 @@ class TableMyProcesses extends React.PureComponent {
           />
           <Table />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-          <TableHeaderRow
-            cellComponent={tableHeaderRowCell}
-            showSortingControls
-          />
+          <CustomTableHeaderRowCell />
           <TableColumnVisibility />
           <TableSelection
             selectByRowClick
@@ -729,6 +716,7 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     data.map(row => {
+      row.data = row;
       row.time_profile = this.renderTimeProfile(row);
       row.processes_process_id = this.renderProcessesId(row);
       // row.processes_start_date = this.renderStartDate(row);
