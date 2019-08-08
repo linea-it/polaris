@@ -43,13 +43,18 @@ const SortingIcon = ({ direction }) =>
     <ArrowDownward style={{ fontSize: '18px' }} />
   );
 
-const SortLabel = ({ onSort, children, direction }) => {
+const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   const classes = useStyles();
   return (
     <Tooltip title={children.props.children}>
-      <span onClick={onSort} className={classes.invisibleButton}>
+      <span
+        onClick={!restProps.disabled ? onSort : null}
+        className={!restProps.disabled ? classes.invisibleButton : null}
+      >
         {children}
-        {direction && <SortingIcon direction={direction} />}
+        {!restProps.disabled
+          ? direction && <SortingIcon direction={direction} />
+          : null}
       </span>
     </Tooltip>
   );
