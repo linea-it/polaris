@@ -385,10 +385,9 @@ class TableMyProcesses extends React.PureComponent {
         <React.Fragment>
           <Button
             style={styles.btnIco}
-            onClick={this.onShowProcessPlot}
-            title={rowData.processes_process_id}
+            onClick={() => this.onShowProcessPlot(rowData.processes_process_id)}
           >
-            <AccessAlarm title={rowData.processes_process_id} />
+            <AccessAlarm />
           </Button>
         </React.Fragment>
       );
@@ -453,8 +452,8 @@ class TableMyProcesses extends React.PureComponent {
     });
   };
 
-  onShowProcessPlot = e => {
-    this.onClickModal(e.target.getAttribute('title'), 'Profile');
+  onShowProcessPlot = process => {
+    this.onClickModal(process, 'Profile');
   };
 
   renderRelease = rowData => {
@@ -648,9 +647,8 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderTable = () => {
+  renderTable = rows => {
     const {
-      data,
       columns,
       sorting,
       pageSize,
@@ -663,7 +661,7 @@ class TableMyProcesses extends React.PureComponent {
 
     return (
       <React.Fragment>
-        <Grid rows={data} columns={columns}>
+        <Grid rows={rows} columns={columns}>
           <SearchState onValueChange={this.changeSearchValue} />
           <SortingState
             sorting={sorting}
@@ -715,28 +713,25 @@ class TableMyProcesses extends React.PureComponent {
     const { loading, data } = this.state;
     const { classes } = this.props;
 
-    data.map(row => {
-      row.data = row;
-      row.time_profile = this.renderTimeProfile(row);
-      row.processes_process_id = this.renderProcessesId(row);
-      // row.processes_start_date = this.renderStartDate(row);
-      row.processes_start_time = this.renderStartTime(row);
-      row.duration = this.renderDuration(row);
-      row.processes_name = this.renderName(row);
-      row.processes_instance = this.renderInstance(row);
-      row.fields_display_name = this.renderDataset(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
-      row.tguser_display_name = this.renderOwner(row);
-      row.processstatus_display_name = this.renderStatus(row);
-      row.saved = this.renderSaved(row);
-      row.processes_published_date = this.renderCheck(row);
-      return row;
-    });
+    const rows = data.map(row => ({
+      time_profile: this.renderTimeProfile(row),
+      processes_process_id: this.renderProcessesId(row),
+      processes_start_time: this.renderStartTime(row),
+      duration: this.renderDuration(row),
+      processes_name: this.renderName(row),
+      processes_instance: this.renderInstance(row),
+      fields_display_name: this.renderDataset(row),
+      releasetag_release_display_name: this.renderRelease(row),
+      tguser_display_name: this.renderOwner(row),
+      processstatus_display_name: this.renderStatus(row),
+      saved: this.renderSaved(row),
+      processes_published_date: this.renderCheck(row),
+    }));
 
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
-        {this.renderTable()}
+        {this.renderTable(rows)}
         {loading && this.renderLoading()}
       </Paper>
     );
