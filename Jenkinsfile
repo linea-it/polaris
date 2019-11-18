@@ -6,6 +6,7 @@ pipeline {
         deployment = 'polaris'
         namespace = 'scienceportal-dev'
         namespace_prod = 'scienceportal'
+        commit = ''
     }
     agent any
 
@@ -44,8 +45,8 @@ pipeline {
                   curl -D - -X \"POST\" \
                     -H \"content-type: application/json\" \
                     -H \"X-Rundeck-Auth-Token: $RD_AUTH_TOKEN\" \
-                    -d '{\"argString\": \"-namespace $namespace -image $registry:$GIT_COMMIT -deployment $deployment\"}' \
-                    https://fox.linea.gov.br/api/1/job/9c6e3723-2a44-4d03-bb94-67185b9c00b3/executions
+                    -d '{\"argString\": \"-namespace $namespace -commit $GIT_COMMIT -image $registry:$GIT_COMMIT -deployment $deployment\"}' \
+                    https://run.linea.gov.br/api/1/job/9c6e3723-2a44-4d03-bb94-67185b9c00b3/executions
                   """
             }
         }
@@ -68,8 +69,8 @@ pipeline {
                   curl -D - -X \"POST\" \
                     -H \"content-type: application/json\" \
                     -H \"X-Rundeck-Auth-Token: $RD_AUTH_TOKEN\" \
-                    -d '{\"argString\": \"-namespace $namespace_prod -image $registry:$TAG_NAME -deployment $deployment\"}' \
-                    https://fox.linea.gov.br/api/1/job/9c6e3723-2a44-4d03-bb94-67185b9c00b3/executions
+                    -d '{\"argString\": \"-namespace $namespace_prod -commit $TAG_NAME -image $registry:$TAG_NAME -deployment $deployment\"}' \
+                    https://run.linea.gov.br/api/1/job/9c6e3723-2a44-4d03-bb94-67185b9c00b3/executions
                   """
             }
         }
