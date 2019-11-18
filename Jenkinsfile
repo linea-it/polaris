@@ -4,8 +4,8 @@ pipeline {
         registryCredential = 'Dockerhub'
         dockerImage = ''
         deployment = 'polaris'
-        namespace = 'scienceportal-dev'
-        namespace_prod = 'scienceportal'
+        namespace = 'polaris'
+        namespace_prod = 'polaris'
         commit = ''
     }
     agent any
