@@ -11,14 +11,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Testing') {
-            steps {
-                sh 'yarn cache clean'
-                sh 'yarn install'
-                sh 'yarn lint'
-                sh 'yarn test'
-            }
-        }
+
         stage('Creating version.json') {
             steps {
                 sh './version.sh && cat ./src/assets/json/version.json'
