@@ -20,7 +20,9 @@
     "plotly.js": "^1.48.3",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
-    "react-plotly.js": "^2.3.0"
+    "react-plotly.js": "^2.3.0",
+    "react-swipeable-views": "^0.13.3",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
