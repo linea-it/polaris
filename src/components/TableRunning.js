@@ -39,7 +39,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AccessAlarm from '@material-ui/icons/AccessAlarm';
+import SettingsIcon from '@material-ui/icons/Settings';
 import TimeProfile from './TimeProfile';
+import convert from 'xml-js';
+import ProcessConfiguration from './ProcessConfiguration';
 
 const styles = {
   wrapPaper: {
@@ -108,6 +111,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'time_profile', title: 'Time Profile' },
+        { name: 'execution_detail', title: 'Execution Detail' },
         { name: 'processes_instance', title: 'Instance' },
         { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
@@ -123,6 +127,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'duration', width: 110 },
         { columnName: 'processes_name', width: 140 },
         { columnName: 'time_profile', width: 140 },
+        { columnName: 'execution_detail', width: 140 },
         { columnName: 'processes_instance', width: 140 },
         { columnName: 'releasetag_release_display_name', width: 110 },
         { columnName: 'fields_display_name', width: 140 },
@@ -147,6 +152,8 @@ class TableMyProcesses extends React.PureComponent {
       rowsDatasetRunning: [],
       chooserAllChecked: true,
       timeProfileData: [],
+      isProcessConfigurationVisible: false,
+      processConfiguration: {},
     };
   }
 
@@ -298,6 +305,7 @@ class TableMyProcesses extends React.PureComponent {
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
           processes_published_date: row.node.publishedDate,
+          xmlConfig: row.node.xmlConfig,
         };
       });
       this.setState({
@@ -325,6 +333,24 @@ class TableMyProcesses extends React.PureComponent {
     this.setState(initialState, () => this.loadData());
   };
 
+  handleExecutionDetailClick = rowData => {
+    const configuration = JSON.parse(
+      convert.xml2json(rowData.xmlConfig, { compact: true })
+    );
+
+    this.setState({
+      isProcessConfigurationVisible: true,
+      processConfiguration: configuration,
+    });
+  };
+
+  handleProcessConfigurationClose = () => {
+    this.setState({
+      isProcessConfigurationVisible: false,
+      processConfiguration: {},
+    });
+  };
+
   renderProcessesId = rowData => {
     if (rowData.processes_process_id) {
       return (
@@ -335,6 +361,22 @@ class TableMyProcesses extends React.PureComponent {
     } else {
       return '-';
     }
+  };
+
+  renderExecutionDetail = rowData => {
+    if (rowData.processes_process_id) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <SettingsIcon />
+          </Button>
+        </React.Fragment>
+      );
+    }
+    return '-';
   };
 
   renderStartTime = rowData => {
@@ -691,7 +733,18 @@ class TableMyProcesses extends React.PureComponent {
             selection={selection}
             onSelectionChange={this.changeSelection}
           />
-          <Table />
+          <Table
+            columnExtensions={[
+              {
+                columnName: 'time_profile',
+                align: 'center',
+              },
+              {
+                columnName: 'execution_detail',
+                align: 'center',
+              },
+            ]}
+          />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <CustomTableHeaderRowCell />
           <TableColumnVisibility />
@@ -706,6 +759,11 @@ class TableMyProcesses extends React.PureComponent {
           <CustomColumnChooser />
         </Grid>
         {this.renderModal()}
+        <ProcessConfiguration
+          open={this.state.isProcessConfigurationVisible}
+          onClose={this.handleProcessConfigurationClose}
+          configuration={this.state.processConfiguration}
+        />
       </React.Fragment>
     );
   };
@@ -727,6 +785,7 @@ class TableMyProcesses extends React.PureComponent {
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
       processes_published_date: this.renderCheck(row),
+      execution_detail: this.renderExecutionDetail(row),
     }));
 
     return (
