@@ -44,7 +44,7 @@ import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
 import ProcessConfiguration from './ProcessConfiguration';
 
-const styles = {
+const styles = theme => ({
   wrapPaper: {
     position: 'relative',
     paddingTop: '10px',
@@ -95,7 +95,10 @@ const styles = {
     textDecoration: 'underline',
     cursor: 'pointer',
   },
-};
+  modalWrapper: {
+    background: theme.palette.background.default,
+  },
+});
 
 class TableMyProcesses extends React.PureComponent {
   constructor(props) {
@@ -439,6 +442,8 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderModal = () => {
+    const { classes } = this.props;
+
     if (this.state.modalType === 'Datasets') {
       return (
         <Dialog

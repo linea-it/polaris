@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Typography, IconButton } from '@material-ui/core';
 import Logo from '../assets/img/icon-des.png';
+import Switch from '@material-ui/core/Switch';
 
 const styles = {
   root: {
@@ -15,6 +16,13 @@ const styles = {
   AppBar: {
     boxShadow: 'none',
   },
+  toolbar: {
+    justifyContent: 'space-between',
+  },
+  titleWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+  },
 };
 
 class Header extends React.Component {
@@ -23,23 +31,31 @@ class Header extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, theme, handleThemeSwitch } = this.props;
 
     return (
       <header className={classes.root}>
         <AppBar className={classes.AppBar} position="fixed">
-          <Toolbar variant="dense">
-            <IconButton
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="Menu"
-            >
-              <img src={Logo} alt="Portal" />
-            </IconButton>
+          <Toolbar variant="dense" className={classes.toolbar}>
+            <div className={classes.titleWrapper}>
+              <IconButton
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="Menu"
+              >
+                <img src={Logo} alt="Portal" />
+              </IconButton>
 
-            <Typography variant="h6" color="inherit">
-              Portal Monitor
-            </Typography>
+              <Typography variant="h6" color="inherit">
+                Portal Monitor
+              </Typography>
+            </div>
+            <Switch
+              checked={theme === 'light'}
+              onChange={handleThemeSwitch}
+              value={theme}
+              inputProps={{ 'aria-label': 'secondary checkbox' }}
+            />
           </Toolbar>
         </AppBar>
       </header>
