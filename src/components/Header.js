@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Typography, IconButton } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, IconButton, Button } from '@material-ui/core';
 import Logo from '../assets/img/icon-des.png';
+import HomeIcon from '@material-ui/icons/Home';
 
 const styles = {
   root: {
@@ -15,8 +16,16 @@ const styles = {
   AppBar: {
     boxShadow: 'none',
   },
+  separatorToolBar: {
+    flexGrow: 1,
+  },
 };
 
+const homeUrl =
+process.env.NODE_ENV === 'production'
+  ? window._env_.REACT_APP_HOME_URL
+  : process.env.REACT_APP_HOME_URL;
+  
 class Header extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
@@ -33,13 +42,21 @@ class Header extends React.Component {
               className={classes.menuButton}
               color="inherit"
               aria-label="Menu"
+              href={homeUrl}
             >
               <img src={Logo} alt="Portal" />
             </IconButton>
-
             <Typography variant="h6" color="inherit">
               Portal Monitor
             </Typography>
+            <div className={classes.separatorToolBar} />
+            <Button
+                color="inherit"
+                size="large"
+                href={homeUrl}
+            >
+              <HomeIcon /> 
+            </Button>
           </Toolbar>
         </AppBar>
       </header>
