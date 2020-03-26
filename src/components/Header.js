@@ -46,7 +46,7 @@ class Header extends React.Component {
               <img src={Logo} alt="Portal" />
             </IconButton>
             <Typography variant="h6" color="inherit">
-              Portal Monitor
+              Job Monitor
             </Typography>
             <div className={classes.separatorToolBar} />
             <Button
