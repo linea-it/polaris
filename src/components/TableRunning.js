@@ -42,6 +42,7 @@ import AccessAlarm from '@material-ui/icons/AccessAlarm';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
+import CloseModal from '../components/CloseModal';
 import ProcessConfiguration from './ProcessConfiguration';
 
 const styles = {
@@ -447,6 +448,9 @@ class TableMyProcesses extends React.PureComponent {
           aria-labelledby={this.state.modalType}
           maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
         >
+          <DialogTitle>
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
           <TableDataset
             rowsDatasetRunning={this.state.rowsDatasetRunning}
             loadData={this.loadData}
@@ -462,6 +466,9 @@ class TableMyProcesses extends React.PureComponent {
             aria-labelledby={this.state.modalType}
             maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
           >
+            <DialogTitle>
+              <CloseModal callbackParent={() => this.onHideModal()} />
+            </DialogTitle>
             <TimeProfile data={this.state.timeProfileData} />
           </Dialog>
         );
@@ -473,7 +480,10 @@ class TableMyProcesses extends React.PureComponent {
           aria-labelledby={this.state.modalType}
           maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
         >
-          <DialogTitle>Time Profiler</DialogTitle>
+          <DialogTitle>
+            Time Profiler
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               Unable to generate plot due to a lack of data!
