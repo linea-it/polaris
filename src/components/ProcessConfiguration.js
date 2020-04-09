@@ -17,6 +17,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CustomList from './CustomList';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CloseModal from '../components/CloseModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -308,6 +309,7 @@ function ProcessConfiguration({ open, maxWidth, onClose, configuration }) {
               variant="fullWidth"
             >
               {renderTabs(components)}
+              <CloseModal callbackParent={() => handleClose()} />
             </Tabs>
           </AppBar>
           <SwipeableViews
