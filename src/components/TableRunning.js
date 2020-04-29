@@ -107,32 +107,32 @@ class TableMyProcesses extends React.PureComponent {
   get initialState() {
     return {
       columns: [
+        { name: 'tguser_display_name', title: 'Owner' },
+        { name: 'processes_name', title: 'Pipeline' },
+        { name: 'execution_detail', title: 'Config' },
+        { name: 'releasetag_release_display_name', title: 'Release' },
+        { name: 'fields_display_name', title: 'Dataset' },
         { name: 'processes_process_id', title: 'Process ID' },
         { name: 'processes_start_time', title: 'Start Date' },
         { name: 'duration', title: 'Duration' },
-        { name: 'processes_name', title: 'Pipeline' },
         { name: 'time_profile', title: 'Time Profile' },
-        { name: 'execution_detail', title: 'Execution Detail' },
         { name: 'processes_instance', title: 'Instance' },
-        { name: 'releasetag_release_display_name', title: 'Release' },
-        { name: 'fields_display_name', title: 'Dataset' },
-        { name: 'tguser_display_name', title: 'Owner' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
         { name: 'processes_published_date', title: 'Published' },
       ],
       defaultColumnWidths: [
+        { columnName: 'tguser_display_name', width: 180 },
+        { columnName: 'processes_name', width: 140 },
+        { columnName: 'execution_detail', width: 140 },
+        { columnName: 'releasetag_release_display_name', width: 110 },
+        { columnName: 'fields_display_name', width: 140 },
         { columnName: 'processes_process_id', width: 140 },
         { columnName: 'processes_start_time', width: 120 },
         { columnName: 'processes_start_date', width: 120 },
         { columnName: 'duration', width: 110 },
-        { columnName: 'processes_name', width: 140 },
         { columnName: 'time_profile', width: 140 },
-        { columnName: 'execution_detail', width: 140 },
         { columnName: 'processes_instance', width: 140 },
-        { columnName: 'releasetag_release_display_name', width: 110 },
-        { columnName: 'fields_display_name', width: 140 },
-        { columnName: 'tguser_display_name', width: 180 },
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 100 },
         { columnName: 'processes_published_date', width: 130 },
@@ -671,6 +671,8 @@ class TableMyProcesses extends React.PureComponent {
         >
           <MenuItem value={'all'}>All</MenuItem>
           <MenuItem value={'running'}>Running</MenuItem>
+          <MenuItem value={'failure'}>Failure</MenuItem>
+          <MenuItem value={'success'}>Success</MenuItem>
         </Select>
       </FormControl>
     );
