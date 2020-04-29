@@ -44,6 +44,12 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 5,
     paddingBottom: 5,
   },
+  cardContent: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
+    },
+  },
   headerTitle: {
     color: theme.palette.primary.contrastText,
     fontSize: '0.92rem',
@@ -188,7 +194,7 @@ function ProcessConfiguration({ open, maxWidth, onClose, configuration }) {
                 }
                 className={classes.cardHeader}
               />
-              <CardContent>
+              <CardContent className={classes.cardContent}>
                 {scalar.length > 0 ? (
                   <CustomList
                     data={scalar.map(s => ({
