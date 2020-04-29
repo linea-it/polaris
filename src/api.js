@@ -30,6 +30,10 @@ export default class Centaurus {
       strFilter = 'allInstances: true';
     } else if (filter === 'running') {
       strFilter = 'running: true';
+    } else if (filter === 'failure') {
+      strFilter = 'failure: true';
+    } else if (filter === 'success') {
+      strFilter = 'success: true';
     }
 
     try {
