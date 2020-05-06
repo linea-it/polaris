@@ -54,6 +54,7 @@ export default class Centaurus {
                 name
                 flagPublished
                 publishedDate
+                flagRemoved
                 instance
                 xmlConfig
                 savedProcesses {

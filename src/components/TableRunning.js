@@ -40,6 +40,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AccessAlarm from '@material-ui/icons/AccessAlarm';
 import SettingsIcon from '@material-ui/icons/Settings';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
 import CloseModal from '../components/CloseModal';
@@ -78,6 +79,9 @@ const styles = {
   iconCheck: {
     color: 'green',
   },
+  iconCheckRed: {
+    color: 'red',
+  },
   itemLink: {
     color: 'blue',
     cursor: 'pointer',
@@ -108,40 +112,49 @@ class TableMyProcesses extends React.PureComponent {
     return {
       columns: [
         { name: 'tguser_display_name', title: 'Owner' },
+        { name: 'processes_instance', title: 'Instance' },
         { name: 'processes_name', title: 'Pipeline' },
-        { name: 'execution_detail', title: 'Config' },
         { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
+        { name: 'execution_detail', title: 'Config' },
         { name: 'processes_process_id', title: 'Process ID' },
-        { name: 'processes_start_time', title: 'Start Date' },
+        { name: 'processes_start_date', title: 'Start Date' },
+        { name: 'processes_start_time', title: 'Start Time' },
         { name: 'duration', title: 'Duration' },
+        { name: 'report', title: 'Report' },
         { name: 'time_profile', title: 'Time Profile' },
-        { name: 'processes_instance', title: 'Instance' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
+        { name: 'removed', title: 'Remov.' },
         { name: 'processes_published_date', title: 'Published' },
+        { name: 'export', title: 'Export' },
+        { name: 'released', title: 'Released' },
       ],
       defaultColumnWidths: [
         { columnName: 'tguser_display_name', width: 180 },
+        { columnName: 'processes_instance', width: 140 },
         { columnName: 'processes_name', width: 140 },
-        { columnName: 'execution_detail', width: 140 },
         { columnName: 'releasetag_release_display_name', width: 110 },
         { columnName: 'fields_display_name', width: 140 },
+        { columnName: 'execution_detail', width: 80 },
         { columnName: 'processes_process_id', width: 140 },
-        { columnName: 'processes_start_time', width: 120 },
-        { columnName: 'processes_start_date', width: 120 },
+        { columnName: 'processes_start_date', width: 100 },
+        { columnName: 'processes_start_time', width: 100 },
         { columnName: 'duration', width: 110 },
+        { columnName: 'report', width: 110 },
         { columnName: 'time_profile', width: 140 },
-        { columnName: 'processes_instance', width: 140 },
         { columnName: 'processstatus_display_name', width: 110 },
-        { columnName: 'saved', width: 100 },
-        { columnName: 'processes_published_date', width: 130 },
+        { columnName: 'saved', width: 80 },
+        { columnName: 'removed', width: 80 },
+        { columnName: 'processes_published_date', width: 80 },
+        { columnName: 'export', width: 80 },
+        { columnName: 'released', width: 80 },
       ],
       data: [],
       sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
       totalCount: 0,
-      pageSize: 10,
-      pageSizes: [5, 10, 15],
+      pageSize: 8,
+      pageSizes: [8, 15, 20],
       currentPage: 0,
       loading: true,
       after: '',
@@ -272,10 +285,10 @@ class TableMyProcesses extends React.PureComponent {
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
         const startDateSplit = row.node.startTime
-          ? row.node.startTime.split('T')[1]
+          ? row.node.startTime.split('T')[0]
           : null;
         const startTimeSplit = row.node.startTime
-          ? row.node.startTime.split('T')[0]
+          ? row.node.startTime.split('T')[1]
           : null;
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
@@ -305,6 +318,8 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
+          removed: row.node.flagRemoved,
+          export: true,
           processes_published_date: row.node.publishedDate,
           xmlConfig: row.node.xmlConfig,
         };
@@ -380,6 +395,18 @@ class TableMyProcesses extends React.PureComponent {
     return '-';
   };
 
+  renderStartDate = rowData => {
+    if (rowData.processes_start_date) {
+      return (
+        <span title={rowData.processes_start_date}>
+          {rowData.processes_start_date}
+        </span>
+      );
+    } else {
+      return '-';
+    }
+  };
+
   renderStartTime = rowData => {
     if (rowData.processes_start_time) {
       return (
@@ -416,6 +443,32 @@ class TableMyProcesses extends React.PureComponent {
         <span title={rowData.processes_instance}>
           {rowData.processes_instance}
         </span>
+      );
+    } else {
+      return '-';
+    }
+  };
+
+  renderRemoved = rowData => {
+    const { classes } = this.props;
+    if (rowData.removed) {
+      return <Icon className={classes.iconCheckRed}>check</Icon>;
+    } else {
+      return '-';
+    }
+  };
+
+  renderExport = rowData => {
+    if (rowData.export) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            // onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <GetAppIcon />
+          </Button>
+        </React.Fragment>
       );
     } else {
       return '-';
@@ -724,6 +777,7 @@ class TableMyProcesses extends React.PureComponent {
               // { columnName: 'processes_start_date', sortingEnabled: false },
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
+              { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
               // { columnName: 'processes_name', sortingEnabled: false },
@@ -787,6 +841,7 @@ class TableMyProcesses extends React.PureComponent {
     const rows = data.map(row => ({
       time_profile: this.renderTimeProfile(row),
       processes_process_id: this.renderProcessesId(row),
+      processes_start_date: this.renderStartDate(row),
       processes_start_time: this.renderStartTime(row),
       duration: this.renderDuration(row),
       processes_name: this.renderName(row),
@@ -796,8 +851,10 @@ class TableMyProcesses extends React.PureComponent {
       tguser_display_name: this.renderOwner(row),
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
+      removed: this.renderRemoved(row),
       processes_published_date: this.renderCheck(row),
       execution_detail: this.renderExecutionDetail(row),
+      export: this.renderExport(row),
     }));
 
     return (
