@@ -94,6 +94,13 @@ const styles = {
     left: '24px',
     zIndex: '999',
   },
+  formControlUser: {
+    width: '180px',
+    position: 'absolute',
+    top: '8px',
+    left: '220px',
+    zIndex: '999',
+  },
   processIdBtn: {
     color: 'blue',
     fontWeight: 'normal',
@@ -160,6 +167,7 @@ class TableMyProcesses extends React.PureComponent {
       after: '',
       selection: [],
       filter: 'all',
+      filterUser: 'all',
       searchValue: '',
       visible: false,
       modalType: '',
@@ -268,13 +276,21 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   loadData = async () => {
-    const { sorting, pageSize, after, filter, searchValue } = this.state;
+    const {
+      sorting,
+      pageSize,
+      after,
+      filter,
+      filterUser,
+      searchValue,
+    } = this.state;
 
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
       after,
       filter,
+      filterUser,
       searchValue
     );
 
@@ -337,13 +353,31 @@ class TableMyProcesses extends React.PureComponent {
 
   handleChangeFilter = evt => {
     const filter = evt.target.value;
+    const filterUser = this.state.filterUser;
     const filterOld = this.state.filterOld;
     const totalCount = this.state.totalCount;
 
     const initialState = this.initialState;
     initialState.loading = true;
     initialState.filter = filter;
+    initialState.filterUser = filterUser;
     initialState.filterOld = filterOld;
+    initialState.totalCount = parseInt(totalCount);
+
+    this.setState(initialState, () => this.loadData());
+  };
+
+  handleChangeFilterUser = evt => {
+    const filter = this.state.filter;
+    const filterUser = evt.target.value;
+    const filterUserOld = this.state.filterUserOld;
+    const totalCount = this.state.totalCount;
+
+    const initialState = this.initialState;
+    initialState.loading = true;
+    initialState.filter = filter;
+    initialState.filterUser = filterUser;
+    initialState.filterUserOld = filterUserOld;
     initialState.totalCount = parseInt(totalCount);
 
     this.setState(initialState, () => this.loadData());
@@ -711,23 +745,43 @@ class TableMyProcesses extends React.PureComponent {
   renderFilter = () => {
     const { classes } = this.props;
     return (
-      <FormControl className={classes.formControl}>
-        <InputLabel shrink htmlFor="filter-label-placeholder">
-          Filter
-        </InputLabel>
-        <Select
-          value={this.state.filter}
-          onChange={this.handleChangeFilter}
-          input={<Input name="filter" id="filter-label-placeholder" />}
-          displayEmpty
-          name="filter"
-        >
-          <MenuItem value={'all'}>All</MenuItem>
-          <MenuItem value={'running'}>Running</MenuItem>
-          <MenuItem value={'failure'}>Failure</MenuItem>
-          <MenuItem value={'success'}>Success</MenuItem>
-        </Select>
-      </FormControl>
+      <div>
+        <FormControl className={classes.formControl}>
+          <InputLabel shrink htmlFor="filter-label-placeholder">
+            Filter
+          </InputLabel>
+          <Select
+            value={this.state.filter}
+            onChange={this.handleChangeFilter}
+            input={<Input name="filter" id="filter-label-placeholder" />}
+            displayEmpty
+            name="filter"
+          >
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'running'}>Running</MenuItem>
+            <MenuItem value={'failure'}>Failure</MenuItem>
+            <MenuItem value={'success'}>Success</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControlUser}>
+          <InputLabel shrink htmlFor="filterUser-label-placeholder">
+            Filter User
+          </InputLabel>
+          <Select
+            value={this.state.filterUser}
+            onChange={this.handleChangeFilterUser}
+            input={
+              <Input name="filterUser" id="filterUser-label-placeholder" />
+            }
+            displayEmpty
+            name="filterUser"
+          >
+            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'user'}>User</MenuItem>
+            <MenuItem value={'testing'}>Testing</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
     );
   };
 
