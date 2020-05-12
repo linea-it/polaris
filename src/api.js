@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Lokka from 'lokka';
 import Transport from 'lokka-transport-http';
 
@@ -16,11 +17,13 @@ export default class Centaurus {
     pageSize,
     after,
     filter,
+    filterUser,
     searchValue
   ) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
     var strFilter = '';
+    var strFilterUser = '';
 
     if (after !== null) {
       strAfter = `, after: "${after}"`;
@@ -36,6 +39,14 @@ export default class Centaurus {
       strFilter = 'success: true';
     }
 
+    if (filterUser === 'all') {
+      strFilterUser = 'displayName: all';
+    } else if (filterUser === 'user') {
+      strFilterUser = 'displayName: user';
+    } else if (filterUser === 'testing') {
+      strFilterUser = 'displayName: testing';
+    }
+    console.log(strFilterUser);
     try {
       const processesList = await client.query(`
         {
