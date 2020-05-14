@@ -41,6 +41,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import AccessAlarm from '@material-ui/icons/AccessAlarm';
 import SettingsIcon from '@material-ui/icons/Settings';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import ShareIcon from '@material-ui/icons/Share';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
 import CloseModal from '../components/CloseModal';
@@ -132,6 +133,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'time_profile', title: 'Time Profile' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
+        { name: 'shared', title: 'Shared' },
         { name: 'removed', title: 'Remov.' },
         { name: 'processes_published_date', title: 'Published' },
         { name: 'export', title: 'Export' },
@@ -152,6 +154,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'time_profile', width: 140 },
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 80 },
+        { columnName: 'shared', width: 80 },
         { columnName: 'removed', width: 80 },
         { columnName: 'processes_published_date', width: 80 },
         { columnName: 'export', width: 80 },
@@ -334,6 +337,7 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
+          shared: true,
           removed: row.node.flagRemoved,
           export: true,
           processes_published_date: row.node.publishedDate,
@@ -713,6 +717,23 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderShared = rowData => {
+    if (rowData.shared) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            // onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <ShareIcon />
+          </Button>
+        </React.Fragment>
+      );
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
   renderCheck = rowData => {
     const { classes } = this.props;
     if (rowData.processes_published_date) {
@@ -831,6 +852,7 @@ class TableMyProcesses extends React.PureComponent {
               // { columnName: 'processes_start_date', sortingEnabled: false },
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
+              { columnName: 'shared', sortingEnabled: false },
               { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
@@ -905,6 +927,7 @@ class TableMyProcesses extends React.PureComponent {
       tguser_display_name: this.renderOwner(row),
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
+      shared: this.renderShared(row),
       removed: this.renderRemoved(row),
       processes_published_date: this.renderCheck(row),
       execution_detail: this.renderExecutionDetail(row),
