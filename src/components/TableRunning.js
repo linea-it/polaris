@@ -42,10 +42,13 @@ import AccessAlarm from '@material-ui/icons/AccessAlarm';
 import SettingsIcon from '@material-ui/icons/Settings';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
+import CommentIcon from '@material-ui/icons/Comment';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
+import clsx from 'clsx';
 import CloseModal from '../components/CloseModal';
 import ProcessConfiguration from './ProcessConfiguration';
+import Comments from './comments';
 
 const styles = {
   wrapPaper: {
@@ -99,8 +102,11 @@ const styles = {
     width: '180px',
     position: 'absolute',
     top: '8px',
-    left: '220px',
+    left: '440px',
     zIndex: '999',
+  },
+  statusFilter: {
+    left: 228,
   },
   processIdBtn: {
     color: 'blue',
@@ -135,6 +141,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'saved', title: 'Saved' },
         { name: 'shared', title: 'Shared' },
         { name: 'removed', title: 'Remov.' },
+        { name: 'comments', title: 'Comm...' },
         { name: 'processes_published_date', title: 'Published' },
         { name: 'export', title: 'Export' },
         { name: 'released', title: 'Released' },
@@ -156,6 +163,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'saved', width: 80 },
         { columnName: 'shared', width: 80 },
         { columnName: 'removed', width: 80 },
+        { columnName: 'comments', width: 80 },
         { columnName: 'processes_published_date', width: 80 },
         { columnName: 'export', width: 80 },
         { columnName: 'released', width: 80 },
@@ -170,6 +178,7 @@ class TableMyProcesses extends React.PureComponent {
       after: '',
       selection: [],
       filter: 'all',
+      status: 'all',
       filterUser: 'all',
       searchValue: '',
       visible: false,
@@ -285,6 +294,7 @@ class TableMyProcesses extends React.PureComponent {
       after,
       filter,
       filterUser,
+      status,
       searchValue,
     } = this.state;
 
@@ -294,6 +304,7 @@ class TableMyProcesses extends React.PureComponent {
       after,
       filter,
       filterUser,
+      status,
       searchValue
     );
 
@@ -339,6 +350,7 @@ class TableMyProcesses extends React.PureComponent {
           saved: row.node.savedProcesses,
           shared: true,
           removed: row.node.flagRemoved,
+          comments: row.node.comments,
           export: true,
           processes_published_date: row.node.publishedDate,
           xmlConfig: row.node.xmlConfig,
@@ -357,24 +369,63 @@ class TableMyProcesses extends React.PureComponent {
 
   handleChangeFilter = evt => {
     const filter = evt.target.value;
-    const filterUser = this.state.filterUser;
     const filterOld = this.state.filterOld;
     const totalCount = this.state.totalCount;
 
     const initialState = this.initialState;
     initialState.loading = true;
     initialState.filter = filter;
-    initialState.filterUser = filterUser;
     initialState.filterOld = filterOld;
     initialState.totalCount = parseInt(totalCount);
 
     this.setState(initialState, () => this.loadData());
+    this.setState({
+      status: filter !== 'incomplete' ? this.state.statusOld : 'running',
+    });
+
+    if (filter === 'incomplete') {
+      this.setState({
+        status: 'running',
+        filterUser: 'all',
+      });
+    } else if (filter === 'complete' && filterOld === 'incomplete') {
+      this.setState({
+        status: 'all',
+        filterUser: 'all',
+      });
+    } else {
+      this.setState({
+        status: 'all',
+        filterUser: 'all',
+      });
+    }
+  };
+
+  handleChangeStatusFilter = evt => {
+    const filter = this.state.filter;
+    const status = evt.target.value;
+    const statusOld = this.state.statusOld;
+    const totalCount = this.state.totalCount;
+
+    const initialState = this.initialState;
+    initialState.loading = true;
+
+    initialState.filter = filter;
+    initialState.status = status;
+    initialState.statusOld = statusOld;
+    initialState.totalCount = parseInt(totalCount);
+
+    this.setState(initialState, () => this.loadData());
+    this.setState({
+      filterUser: 'all',
+    });
   };
 
   handleChangeFilterUser = evt => {
     const filter = this.state.filter;
     const filterUser = evt.target.value;
     const filterUserOld = this.state.filterUserOld;
+    const status = this.state.status;
     const totalCount = this.state.totalCount;
 
     const initialState = this.initialState;
@@ -382,6 +433,7 @@ class TableMyProcesses extends React.PureComponent {
     initialState.filter = filter;
     initialState.filterUser = filterUser;
     initialState.filterUserOld = filterUserOld;
+    initialState.status = status;
     initialState.totalCount = parseInt(totalCount);
 
     this.setState(initialState, () => this.loadData());
@@ -403,6 +455,89 @@ class TableMyProcesses extends React.PureComponent {
       isProcessConfigurationVisible: false,
       processConfiguration: {},
     });
+  };
+
+  renderFilter = () => {
+    const { classes } = this.props;
+
+    return (
+      <FormControl className={classes.formControl}>
+        <InputLabel shrink htmlFor="filter-label-placeholder">
+          Filter
+        </InputLabel>
+        <Select
+          value={this.state.filter}
+          onChange={this.handleChangeFilter}
+          input={<Input name="filter" id="filter-label-placeholder" />}
+          displayEmpty
+          name="filter"
+        >
+          <MenuItem value={'all'}>All</MenuItem>
+          <MenuItem value={'complete'}>Complete</MenuItem>
+          <MenuItem value={'incomplete'}>Incomplete</MenuItem>
+          <MenuItem value={'published'}>Published</MenuItem>
+          <MenuItem value={'saved'}>Saved</MenuItem>
+          <MenuItem value={'unpublished'}>Unpublished</MenuItem>
+          <MenuItem value={'unsaved'}>Unsaved</MenuItem>
+          <MenuItem value={'removed'}>Removed</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  };
+
+  renderStatusFilter = () => {
+    const { classes } = this.props;
+    const { filter } = this.state;
+
+    return (
+      <FormControl className={clsx(classes.formControl, classes.statusFilter)}>
+        <InputLabel shrink htmlFor="status-label-placeholder">
+          Status
+        </InputLabel>
+        <Select
+          value={this.state.status}
+          onChange={this.handleChangeStatusFilter}
+          input={<Input name="status" id="status-label-placeholder" />}
+          displayEmpty
+          name="status"
+        >
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'all'}>All</MenuItem>
+          ) : null}
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'failure'}>Failure</MenuItem>
+          ) : null}
+          {filter !== 'complete' ? (
+            <MenuItem value={'running'}>Running</MenuItem>
+          ) : null}
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'success'}>Success</MenuItem>
+          ) : null}
+        </Select>
+      </FormControl>
+    );
+  };
+
+  renderIntanceFilter = () => {
+    const { classes } = this.props;
+    return (
+      <FormControl className={classes.formControlUser}>
+        <InputLabel shrink htmlFor="filterUser-label-placeholder">
+          Instance
+        </InputLabel>
+        <Select
+          value={this.state.filterUser}
+          onChange={this.handleChangeFilterUser}
+          input={<Input name="filterUser" id="filterUser-label-placeholder" />}
+          displayEmpty
+          name="filterUser"
+        >
+          <MenuItem value={'all'}>All</MenuItem>
+          <MenuItem value={'user'}>User</MenuItem>
+          <MenuItem value={'testing'}>Testing</MenuItem>
+        </Select>
+      </FormControl>
+    );
   };
 
   renderProcessesId = rowData => {
@@ -585,6 +720,49 @@ class TableMyProcesses extends React.PureComponent {
           </DialogContent>
         </Dialog>
       );
+    } else if (this.state.modalType === 'Comments') {
+      if (
+        this.state.comments.commentsByProcessId &&
+        this.state.comments.commentsByProcessId.length > 0
+      ) {
+        return (
+          <Dialog
+            onClose={this.onHideModal}
+            open={this.state.visible}
+            aria-labelledby={this.state.modalType}
+            maxWidth={this.state.modalType === 'Comments' ? 'lg' : 'sm'}
+          >
+            <DialogTitle>
+              Comments
+              <CloseModal callbackParent={() => this.onHideModal()} />
+            </DialogTitle>
+            <Comments
+              commentsProcess={this.state.comments.commentsByProcessId}
+            />
+          </Dialog>
+        );
+      }
+      return (
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Comments' ? 'lg' : 'sm'}
+        >
+          <DialogTitle>
+            Comments
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Unable to generate Comments due to a lack of data!
+              <br />
+              Please, verify the status of the process you are trying to
+              analyze.
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      );
     }
   };
 
@@ -593,6 +771,10 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       rowsDatasetRunning: rows,
     });
+  };
+
+  onShowComments = process => {
+    this.onClickModal(process, 'Comments');
   };
 
   onShowProcessPlot = process => {
@@ -734,6 +916,23 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderComments = rowData => {
+    if (rowData.shared) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={() => this.onShowComments(rowData.processes_process_id)}
+          >
+            <CommentIcon />
+          </Button>
+        </React.Fragment>
+      );
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
   renderCheck = rowData => {
     const { classes } = this.props;
     if (rowData.processes_published_date) {
@@ -763,49 +962,6 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  renderFilter = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        <FormControl className={classes.formControl}>
-          <InputLabel shrink htmlFor="filter-label-placeholder">
-            Filter
-          </InputLabel>
-          <Select
-            value={this.state.filter}
-            onChange={this.handleChangeFilter}
-            input={<Input name="filter" id="filter-label-placeholder" />}
-            displayEmpty
-            name="filter"
-          >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'running'}>Running</MenuItem>
-            <MenuItem value={'failure'}>Failure</MenuItem>
-            <MenuItem value={'success'}>Success</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControlUser}>
-          <InputLabel shrink htmlFor="filterUser-label-placeholder">
-            Filter User
-          </InputLabel>
-          <Select
-            value={this.state.filterUser}
-            onChange={this.handleChangeFilterUser}
-            input={
-              <Input name="filterUser" id="filterUser-label-placeholder" />
-            }
-            displayEmpty
-            name="filterUser"
-          >
-            <MenuItem value={'all'}>All</MenuItem>
-            <MenuItem value={'user'}>User</MenuItem>
-            <MenuItem value={'testing'}>Testing</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-    );
-  };
-
   onHideModal = () => {
     this.setState({ visible: false });
   };
@@ -824,6 +980,15 @@ class TableMyProcesses extends React.PureComponent {
           visible: true,
           modalType: modalType,
           timeProfileData: res,
+        })
+      );
+    } else if (modalType === 'Comments') {
+      const comments = Centaurus.getAllCommentsByProcessId(data);
+      comments.then(res =>
+        this.setState({
+          visible: true,
+          modalType: modalType,
+          comments: res,
         })
       );
     }
@@ -853,6 +1018,7 @@ class TableMyProcesses extends React.PureComponent {
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
               { columnName: 'shared', sortingEnabled: false },
+              { columnName: 'comments', sortingEnabled: false },
               { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
@@ -929,6 +1095,7 @@ class TableMyProcesses extends React.PureComponent {
       saved: this.renderSaved(row),
       shared: this.renderShared(row),
       removed: this.renderRemoved(row),
+      comments: this.renderComments(row),
       processes_published_date: this.renderCheck(row),
       execution_detail: this.renderExecutionDetail(row),
       export: this.renderExport(row),
@@ -937,6 +1104,8 @@ class TableMyProcesses extends React.PureComponent {
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
+        {this.state.filter !== 'removed' && this.renderStatusFilter()}
+        {this.renderIntanceFilter()}
         {this.renderTable(rows)}
         {loading && this.renderLoading()}
       </Paper>

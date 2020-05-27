@@ -18,42 +18,68 @@ export default class Centaurus {
     after,
     filter,
     filterUser,
+    status,
     searchValue
   ) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
     var strFilter = '';
-    var strFilterUser = '';
 
     if (after !== null) {
-      strAfter = `, after: "${after}"`;
+      strAfter = `,
+      after: "${after}"`;
     }
 
-    if (filter === 'all') {
-      strFilter = 'allInstances: true';
-    } else if (filter === 'running') {
+    if (filter === 'complete') {
+      strFilter = 'running: false';
+    } else if (filter === 'incomplete') {
       strFilter = 'running: true';
-    } else if (filter === 'failure') {
-      strFilter = 'failure: true';
-    } else if (filter === 'success') {
-      strFilter = 'success: true';
+    } else if (filter === 'saved') {
+      strFilter = 'saved: true';
+    } else if (filter === 'unsaved') {
+      strFilter = 'saved: false';
+    } else if (filter === 'published') {
+      strFilter = 'published: true';
+    } else if (filter === 'unpublished') {
+      strFilter = 'published: false';
+    } else if (filter === 'all' && status === 'all') {
+      strFilter = 'allInstances: true';
+    } else if (filter === 'removed') {
+      strFilter = 'removed: true';
     }
 
-    if (filterUser === 'all') {
-      strFilterUser = 'displayName: all';
-    } else if (filterUser === 'user') {
-      strFilterUser = 'displayName: user';
-    } else if (filterUser === 'testing') {
-      strFilterUser = 'displayName: testing';
+    if (status === 'success') {
+      strFilter = `${strFilter}, ${status}: true`;
+    } else if (status === 'failure') {
+      strFilter = `${strFilter}, ${status}: true`;
+    } else if (status === 'running') {
+      strFilter = `${strFilter}, ${status}: true`;
     }
-    console.log(strFilterUser);
+
     try {
       const processesList = await client.query(`
         {
-          processesList(${strFilter}, search: {text: "${searchValue}", columns: [processes_process_id, processes_start_time, processes_end_time, processes_name, processes_instance, release_tag_release_display_name, fields_display_name, tg_user_display_name]}, sort: [${sort}], first: ${pageSize} ${strAfter}) {
+          processesList(
+            ${strFilter},
+            search: {
+              text: "${searchValue}",
+              columns: [
+                processes_process_id,
+                processes_start_time,
+                processes_end_time,
+                processes_name,
+                processes_instance,
+                release_tag_release_display_name,
+                fields_display_name,
+                tg_user_display_name
+              ]
+            },
+            sort: [${sort}],
+            first: ${pageSize} ${strAfter}
+          ) {
             pageInfo {
-                startCursor
-                endCursor
+              startCursor
+              endCursor
             }
             totalCount
             edges {
@@ -64,10 +90,12 @@ export default class Centaurus {
                 endTime
                 name
                 flagPublished
-                publishedDate
                 flagRemoved
-                instance
+                publishedDate
+                statusId
+                productLog
                 xmlConfig
+                comments
                 savedProcesses {
                   savedDate
                   savedDateEnd
@@ -81,10 +109,10 @@ export default class Centaurus {
                   }
                 }
                 fields {
-                  edges {
-                    node {
+                  edges{
+                    node{
                       displayName
-                      releaseTag {
+                      releaseTag{
                         releaseDisplayName
                       }
                     }
@@ -131,6 +159,27 @@ export default class Centaurus {
         moduleName: item.node.moduleName,
         jobs: item.node.jobs,
       }));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getAllCommentsByProcessId(dataProcessId) {
+    try {
+      const commentsProcess = await client.query(`
+        {
+          commentsByProcessId(processId: ${dataProcessId}) {
+            comments
+            date
+            user {
+              displayName
+            }
+          }
+        }
+      `);
+      return commentsProcess;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
