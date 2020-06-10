@@ -136,8 +136,8 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
         { name: 'processes_process_id', title: 'Process ID' },
+        { name: 'processes_start_date', title: 'Start Date' },
         { name: 'processes_start_time', title: 'Start Time' },
-        { name: 'processes_start', title: 'Start' },
         { name: 'duration', title: 'Duration' },
         { name: 'execution_detail', title: 'Config' },
         { name: 'comments', title: 'Comments' },
@@ -148,8 +148,8 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'processes_published_date', title: 'Published' },
         { name: 'released', title: 'Released' },
         { name: 'shared', title: 'Shared' },
-        { name: 'removed', title: 'Removed.' },
-        { name: 'download', title: 'Donwload.' },
+        { name: 'removed', title: 'Removed' },
+        { name: 'download', title: 'Download' },
         { name: 'export', title: 'Export' },
       ],
       defaultColumnWidths: [
@@ -159,8 +159,8 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'releasetag_release_display_name', width: 110 },
         { columnName: 'fields_display_name', width: 140 },
         { columnName: 'processes_process_id', width: 140 },
+        { columnName: 'processes_start_date', width: 100 },
         { columnName: 'processes_start_time', width: 100 },
-        { columnName: 'processes_start', width: 100 },
         { columnName: 'duration', width: 110 },
         { columnName: 'execution_detail', width: 80 },
         { columnName: 'comments', width: 80 },
@@ -289,10 +289,10 @@ class TableMyProcesses extends React.PureComponent {
       processesList.processesList.edges
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
-        const startTimeSplit = row.node.startTime
+        const startDateSplit = row.node.startTime
           ? moment(row.node.startTime).format('YYYY-MM-DD')
           : null;
-        const startSplit = row.node.startTime
+        const startTimeSplit = row.node.startTime
           ? moment(row.node.startTime).format('HH:mm:ss')
           : null;
         const startTime = moment(row.node.startTime);
@@ -302,8 +302,8 @@ class TableMyProcesses extends React.PureComponent {
 
         return {
           processes_process_id: row.node.processId,
+          processes_start_date: startDateSplit,
           processes_start_time: startTimeSplit,
-          processes_start: startSplit,
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
           processes_name: row.node.name,
@@ -329,7 +329,7 @@ class TableMyProcesses extends React.PureComponent {
           comments: row.node.comments,
           report: true,
           export: true,
-          donwload: true,
+          download: true,
           processes_published_date: row.node.publishedDate,
           xmlConfig: row.node.xmlConfig,
         };
@@ -463,11 +463,11 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderStartTime = rowData => {
-    if (rowData.processes_start_time) {
+  renderStartDate = rowData => {
+    if (rowData.processes_start_date) {
       return (
-        <span title={rowData.processes_start}>
-          {rowData.processes_start_time}
+        <span title={rowData.processes_start_time}>
+          {rowData.processes_start_date}
         </span>
       );
     } else {
@@ -475,10 +475,12 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderStart = rowData => {
-    if (rowData.processes_start) {
+  renderStartTime = rowData => {
+    if (rowData.processes_start_time) {
       return (
-        <span title={rowData.processes_start}>{rowData.processes_start}</span>
+        <span title={rowData.processes_start_time}>
+          {rowData.processes_start_time}
+        </span>
       );
     } else {
       return '-';
@@ -1061,6 +1063,8 @@ class TableMyProcesses extends React.PureComponent {
               { columnName: 'comments', sortingEnabled: false },
               { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
+              { columnName: 'download', sortingEnabled: false },
+              { columnName: 'export', sortingEnabled: false },
               // Temporary sorting disabled:
               // { columnName: 'processes_name', sortingEnabled: false },
               // { columnName: 'fields_display_name', sortingEnabled: false },
@@ -1085,6 +1089,26 @@ class TableMyProcesses extends React.PureComponent {
               },
               {
                 columnName: 'execution_detail',
+                align: 'center',
+              },
+              {
+                columnName: 'saved',
+                align: 'center',
+              },
+              {
+                columnName: 'removed',
+                align: 'center',
+              },
+              {
+                columnName: 'processes_published_date',
+                align: 'center',
+              },
+              {
+                columnName: 'released',
+                align: 'center',
+              },
+              {
+                columnName: 'shared',
                 align: 'center',
               },
             ]}
@@ -1138,8 +1162,8 @@ class TableMyProcesses extends React.PureComponent {
       releasetag_release_display_name: this.renderRelease(row),
       fields_display_name: this.renderDataset(row),
       processes_process_id: this.renderProcessesId(row),
+      processes_start_date: this.renderStartDate(row),
       processes_start_time: this.renderStartTime(row),
-      processes_start: this.renderStart(row),
       duration: this.renderDuration(row),
       execution_detail: this.renderExecutionDetail(row),
       comments: this.renderComments(row),

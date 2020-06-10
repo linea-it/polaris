@@ -84,6 +84,7 @@ export default class Centaurus {
               cursor
               node {
                 processId
+                instance
                 startTime
                 endTime
                 name
