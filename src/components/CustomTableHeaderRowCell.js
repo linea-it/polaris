@@ -9,7 +9,6 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles({
   invisibleButton: {
     backgroundColor: 'transparent',
-    cursor: 'pointer',
     color: 'rgb(85, 85, 85)',
     '&:hover': {
       color: 'rgba(0, 0, 0, 0.87)',
@@ -49,7 +48,8 @@ const SortLabel = ({ onSort, children, direction, ...restProps }) => {
     <Tooltip title={children.props.children}>
       <span
         onClick={!restProps.disabled ? onSort : null}
-        className={!restProps.disabled ? classes.invisibleButton : null}
+        className={classes.invisibleButton}
+        style={{ cursor: !restProps.disabled ? 'pointer' : 'default' }}
       >
         {children}
         {!restProps.disabled
