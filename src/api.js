@@ -32,8 +32,6 @@ export default class Centaurus {
 
     if (filter === 'complete') {
       strFilter = 'running: false';
-    } else if (filter === 'incomplete') {
-      strFilter = 'running: true';
     } else if (filter === 'saved') {
       strFilter = 'saved: true';
     } else if (filter === 'unsaved') {
@@ -86,6 +84,7 @@ export default class Centaurus {
               cursor
               node {
                 processId
+                instance
                 startTime
                 endTime
                 name
