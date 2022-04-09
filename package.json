@@ -16,7 +16,7 @@
     "jest-canvas-mock": "^2.1.0",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.6.1",
-    "moment": "^2.23.0",
+    "moment": "^2.29.2",
     "plotly.js": "^1.48.3",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
